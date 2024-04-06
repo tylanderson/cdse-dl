@@ -1,21 +1,30 @@
 import logging
+import os
 import threading
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
 import requests
 import requests.auth
+from tinynetrc import Netrc
 
 logger = logging.getLogger(__name__)
 
-AUTH_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
+IDENTITY_HOST = "identity.dataspace.copernicus.eu"
+AUTH_URL = f"https://{IDENTITY_HOST}/auth/realms/CDSE/protocol/openid-connect/token"
 
 AUTH_DOMAINS = [
     "catalogue.dataspace.copernicus.eu",
     "download.dataspace.copernicus.eu",
     "zipper.dataspace.copernicus.eu",
 ]
+
+
+class APIAuthException(Exception):
+    """exceptions thrown by authentication."""
+
+    pass
 
 
 def check_response(response: requests.Response):
@@ -30,9 +39,10 @@ def check_response(response: requests.Response):
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
+        logger.info(response.content)
         error_info = response.json()
-        raise Exception(
-            f"Unable to get token. Error: {error_info['error']}. Detail: {error_info['error_description']}"
+        raise APIAuthException(
+            f"Unable to get token. Error: {error_info['error']}. Detail: {error_info.get('error_description', 'None')}"
         ) from e
 
 
@@ -120,7 +130,9 @@ def refresh_token_info_or_reauth(
     return new_token_info
 
 
-def is_token_expired(acquired_time: float, expires_time: float, buffer: float = 60):
+def is_token_expired(
+    acquired_time: float, expires_time: float, buffer: float = 60
+) -> bool:
     """Check if token is expired based on acquired time, and expires_time.
 
     Has a configurable buffer to ensure invalid tokens are not used is delayed
@@ -131,7 +143,7 @@ def is_token_expired(acquired_time: float, expires_time: float, buffer: float = 
         buffer (float, optional): buffer time, in seconds. Defaults to 60.
 
     Returns:
-        _type_: _description_
+        bool: True is token is past expiration
     """
     current_time = time.time()
     return (current_time - acquired_time + buffer) >= expires_time
@@ -150,23 +162,68 @@ class BearerAuth(requests.auth.AuthBase):
         return r
 
 
-class CDSEAuthSession(requests.Session):
-    """authorized cdse session."""
+class Credentials:
+    """Handle credentials for CDSE."""
 
-    def __init__(self, username, password, *args, **kwargs):
-        """Create an authorzied session to cdse."""
-        super().__init__(*args, **kwargs)
+    def __init__(self, username: str, password: str):
+        """Create CDSE credentials from username and password.
+
+        Args:
+            username (str): username
+            password (str): password
+        """
         self.username = username
         self.password = password
         self.token_lock = threading.Lock()
-        self.token_info = get_token_info(
-            self.username, self.password
-        )  # Get initial token information using username and password
-        self.auth = self._create_auth()
+        self.token_info = get_token_info(self.username, self.password)
 
-    def _create_auth(self) -> BearerAuth:
-        """Create a new TokenAuth instance with the current access token."""
-        return BearerAuth(self.token_info["access_token"])
+    @classmethod
+    def from_login(cls, username: str, password: str) -> "Credentials":
+        """Create credentials from login.
+
+        Args:
+            username (str): username
+            password (str): password
+
+        Returns:
+            Credentials: credentials
+        """
+        return cls(username, password)
+
+    @classmethod
+    def from_env(cls) -> "Credentials":
+        """Create credentials from environment variables.
+
+        Raises:
+            Exception: environment variables error
+
+        Returns:
+            Credentials: credentials
+        """
+        username = os.getenv("CDSE_USERNAME", "")
+        password = os.getenv("CDSE_PASSWORD", "")
+        if not username or not password:
+            raise Exception(
+                "'CDSE_USERNAME' and/or 'CDSE_PASSWORD' environment variable does not exist or is empty."
+            )
+        return cls(username, password)
+
+    @classmethod
+    def from_netrc(cls) -> "Credentials":
+        """Create credentials from .netrc file.
+
+        Raises:
+            Exception: netrc error
+
+        Returns:
+            Credentials: credentials
+        """
+        netrc = Netrc()
+        username = netrc[IDENTITY_HOST].get("login")
+        password = netrc[IDENTITY_HOST].get("password")
+        if not username or not password:
+            raise Exception(f".netrc does not have credentials for {IDENTITY_HOST}")
+        return cls(username, password)
 
     def refresh_token(self):
         """Refresh the access token using the refresh token."""
@@ -178,13 +235,35 @@ class CDSEAuthSession(requests.Session):
                 password=self.password,
             )
             self.token_info.update(new_token_info)
-            self.auth = self._create_auth()
 
     def is_token_expired(self):
         """Check if the current access token has expired."""
         return is_token_expired(
             self.token_info["acquired_time"], self.token_info["expires_in"]
         )
+
+
+class CDSEAuthSession(requests.Session):
+    """authorized cdse session."""
+
+    def __init__(self, credentials: Optional[Credentials] = None, *args, **kwargs):
+        """Create an authorized session to cdse."""
+        super().__init__(*args, **kwargs)
+        if credentials is None:
+            credentials = Credentials.from_env()
+
+        self._creds = credentials
+        # Get initial token information using username and password
+        self.auth = self._create_auth()
+
+    def _create_auth(self) -> BearerAuth:
+        """Create a new TokenAuth instance with the current access token."""
+        return BearerAuth(self._creds.token_info["access_token"])
+
+    def refresh_token(self):
+        """Refresh the access token using the refresh token."""
+        self._creds.refresh_token()
+        self.auth = self._creds._create_auth()
 
     def rebuild_auth(self, prepared_request: Any, response: Any):
         """Keep headers upon redirect as long as we are on any of AUTH_DOMAINS."""
@@ -205,7 +284,7 @@ class CDSEAuthSession(requests.Session):
 
     def request(self, *args, **kwargs):
         """Auto-refreshing authenticated request."""
-        if self.is_token_expired():
+        if self._creds.is_token_expired():
             logger.debug("token is expired")
             self.refresh_token()
 

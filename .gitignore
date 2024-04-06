@@ -17,3 +17,6 @@ wheels/
 
 # temp folder
 tmp/
+
+# dotfiles
+.env
