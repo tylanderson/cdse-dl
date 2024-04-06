@@ -291,7 +291,7 @@ class CDSEAuthSession(requests.Session):
         response = super().request(*args, **kwargs)
 
         if response.status_code == 401:  # Unauthorized, try re-authenticating directly
-            logger.debug("401 status, re-trying auth")
+            logger.debug("401 status code, refreshing auth")
             self.refresh_token()
             response = super().request(*args, **kwargs)
         return response

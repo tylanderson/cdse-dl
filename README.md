@@ -16,7 +16,7 @@ Clients for searching and downloading data from Copernicus Data Space Ecosystem
     - [ ] query nodes
     - [ ] download products
         - [x] download single product
-        - [x] download list of products in parallel
+        - [x] download multiple products in parallel
         - [ ] download by id (for opensearch)
 - [ ] OpenSearch
     - [ ] Query products
