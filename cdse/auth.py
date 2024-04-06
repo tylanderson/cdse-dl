@@ -52,7 +52,7 @@ def response_to_token_info(response: requests.Response) -> Dict:
     Adds `acquired_time` to token info
 
     Args:
-        response (requests.Response): _description_
+        response (requests.Response): token info
 
     Returns:
         Dict: token info
