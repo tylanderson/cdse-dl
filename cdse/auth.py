@@ -7,13 +7,14 @@ from urllib.parse import urlparse
 
 import requests
 import requests.auth
+import s3fs
 from tinynetrc import Netrc
 
 logger = logging.getLogger(__name__)
 
 IDENTITY_HOST = "identity.dataspace.copernicus.eu"
 AUTH_URL = f"https://{IDENTITY_HOST}/auth/realms/CDSE/protocol/openid-connect/token"
-
+CDSE_S3_ENDPOINT = "https://eodata.dataspace.copernicus.eu"
 AUTH_DOMAINS = [
     "catalogue.dataspace.copernicus.eu",
     "download.dataspace.copernicus.eu",
@@ -295,3 +296,18 @@ class CDSEAuthSession(requests.Session):
             self.refresh_token()
             response = super().request(*args, **kwargs)
         return response
+
+
+def get_s3fs_session() -> s3fs.S3FileSystem:
+    access_key = os.getenv("CDSE_S3_ACCESS_KEY", "")
+    secret_key = os.getenv("CDSE_S3_SECRET_KEY", "")
+    if not access_key or not secret_key:
+        raise Exception(
+            "'CDSE_S3_ACCESS_KEY' and/or 'CDSE_S3_SECRET_KEY' environment variable does not exist or is empty."
+        )
+    fs = s3fs.S3FileSystem(
+        endpoint_url=CDSE_S3_ENDPOINT,
+        key=access_key,
+        secret=secret_key,
+    )
+    return fs
