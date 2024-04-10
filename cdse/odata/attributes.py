@@ -220,7 +220,7 @@ KNOWN_ATTRS_BY_COLLECTION = {
 }
 
 
-def get_collections() -> Tuple[str, ...]:
+def get_known_collections() -> Tuple[str, ...]:
     """Get all known collections.
 
     Returns:
@@ -242,6 +242,6 @@ def get_collection_known_attributes(collection: str) -> Tuple[str, ...]:
         Tuple[str, ...]: known attributes
 
     """
-    if collection not in get_collections():
+    if collection not in get_known_collections():
         raise ValueError(f"Invalid Collection: {collection}")
     return KNOWN_ATTRS_BY_COLLECTION[collection]

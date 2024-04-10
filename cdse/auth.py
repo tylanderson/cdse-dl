@@ -299,6 +299,7 @@ class CDSEAuthSession(requests.Session):
 
 
 def get_s3fs_session() -> s3fs.S3FileSystem:
+    """Get s3fs session."""
     access_key = os.getenv("CDSE_S3_ACCESS_KEY", "")
     secret_key = os.getenv("CDSE_S3_SECRET_KEY", "")
     if not access_key or not secret_key:
