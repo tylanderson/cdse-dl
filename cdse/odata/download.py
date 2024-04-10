@@ -3,10 +3,11 @@ import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Any, Dict, Iterable, Optional
 
 from tqdm.auto import tqdm
 
-from ..auth import CDSEAuthSession
+from ..auth import CDSEAuthSession, Credentials
 
 try:
     import blake3
@@ -20,8 +21,19 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
 
 
-def _check_hash(file_path, product_info, block_size=1024 * 1024):
-    """Compare a given MD5 checksum with one calculated from a file."""
+def _check_hash(
+    file_path: Any, product_info: Dict, block_size: int = 1024 * 1024
+) -> bool:
+    """Compare a given MD5 checksum with one calculated from a file.
+
+    Args:
+        file_path (Any): file path to hash
+        product_info (Dict): CDSE product info
+        block_size (int, optional): block size to read. Defaults to 1024*1024.
+
+    Returns:
+        bool: True if file matches hash in product info
+    """
     checksums_info = {i["Algorithm"]: i for i in product_info["Checksum"]}
     checksums_available = checksums_info.keys()
 
@@ -59,20 +71,36 @@ def _check_hash(file_path, product_info, block_size=1024 * 1024):
 
 
 class Downloader:
-    def __init__(self, username, password) -> None:
-        self.session = CDSEAuthSession(username, password)
+    """Downloader for CDSE."""
+
+    def __init__(
+        self,
+        credentials: Optional[Credentials] = None,
+        max_num_workers: Optional[int] = 4,
+    ) -> None:
+        """Downloader for CDSE.
+
+        Args:
+            credentials (Optional[Credentials], optional): Credentials for authorizing session. Defaults to None.
+            max_num_workers (Optional[int], optional): Max number of workers to download with. Defaults to 4.
+        """
+        self.session = CDSEAuthSession(credentials)
         self.dl_executor = ThreadPoolExecutor(
-            max_workers=4,
+            max_workers=max_num_workers,
             thread_name_prefix="cdse-dl",
         )
 
-    def download_all(self, products, path, check=True):
-        with self.dl_executor as pool:
-            futures = [
-                pool.submit(self.download, product, path, check) for product in products
-            ]
+    def download(self, product: Dict, path: Any, check: bool = True):
+        """Download product info to specified path.
 
-    def download(self, product, path, check=True):
+        If `check` is `True`, with attempt to check the file for completeness
+        using checksums are provided in the product info.
+
+        Args:
+            product (Dict): product info
+            path (Any): path to download file to
+            check (bool, optional): check the downloaded file against checksums. Defaults to True.
+        """
         product_id = product["Id"]
         product_name = product["Name"]
 
@@ -92,7 +120,32 @@ class Downloader:
                         "Checksum of downloaded file does not match product info"
                     )
 
-    def _download_url(self, url, path, chunk_size=2**13):
+    def download_all(self, products: Iterable[Dict], path: Any, check: bool = True):
+        """Download product info to specified path.
+
+        If `check` is `True`, with attempt to check the file for completeness
+        using checksums are provided in the product info.
+
+        Downloads are limited to the max number of workers specified on Downloader creation
+
+        Args:
+            products (Iterable[Dict]): multiple product infos to download
+            path (Any): path to download file to
+            check (bool, optional): check the downloaded file against checksums. Defaults to True.
+        """
+        with self.dl_executor as pool:
+            futures = [
+                pool.submit(self.download, product, path, check) for product in products
+            ]
+
+    def _download_url(self, url: str, path: Any, chunk_size: int = 2**13):
+        """Download a CDSE url to path.
+
+        Args:
+            url (str): url to download
+            path (Any): path to save file as
+            chunk_size (int, optional): chunk size to download in. Defaults to 2**13.
+        """
         response = self.session.get(url, stream=True)
         response.raise_for_status()
         length = int(response.headers["Content-Length"])
