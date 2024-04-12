@@ -1,13 +1,24 @@
 [project]
 name = "cdse-dl"
 version = "0.1.0"
-description = "Add your description here"
+description = "Clients for searching and downloading from Copernicus Data Space Ecosystem"
 authors = [
     { name = "Tyler", email = "31015976+tylanderson@users.noreply.github.com" },
 ]
-dependencies = []
+dependencies = [
+    "requests",
+    "tinynetrc",
+    "s3fs",
+    "blake3",
+    "tqdm",
+    "python-dateutil",
+    "shapely",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
+
+[project.optional-dependencies]
+dev = ["pytest", "requests-mock", "pytest-recording", "mypy"]
 
 [build-system]
 requires = ["hatchling"]
