@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any
 
-import pytz
+from dateutil import tz
 
 
 def make_datetime_utc(dt: datetime) -> datetime:
@@ -20,10 +20,10 @@ def make_datetime_utc(dt: datetime) -> datetime:
     # Check if the datetime is naive (has no timezone)
     if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
         # Make the datetime timezone-aware, assuming it's in UTC
-        return dt.replace(tzinfo=pytz.utc)
+        return dt.replace(tzinfo=tz.UTC)
     else:
         # It's already timezone-aware, return as is
-        return dt.astimezone(pytz.utc)
+        return dt.astimezone(tz.UTC)
 
 
 class Filter:

@@ -85,7 +85,7 @@ class SearchBase(ABC):
 
         if expand is not None and (expand not in self.expand_options):
             raise ValueError(
-                f"Invalid `expend` '{expand}', must be one of {self.expand_options}"
+                f"Invalid `expand` '{expand}', must be one of {self.expand_options}"
             )
         if order_by is not None and (order_by not in self.order_by_options):
             raise ValueError(
@@ -322,6 +322,8 @@ def _parse_datetime_to_components(
         return [make_datetime_utc(value)]
     elif isinstance(value, str):
         components = value.split("/")
+    else:
+        components = value  # type: ignore
 
     datetime_components: List[Optional[datetime]] = []
     for component in components:
@@ -363,8 +365,8 @@ def _filter_from_datetime_components(
             return filters[0].and_(filters[1])
     else:
         raise Exception(
-            "too many datetime components "
-            f"(max=2, actual={len(components)}): {components}"
+            "too many/few datetime components "
+            f"(min=1, max=2, actual={len(components)}): {components}"
         )
 
 

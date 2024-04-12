@@ -40,7 +40,6 @@ def check_response(response: requests.Response):
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        logger.info(response.content)
         error_info = response.json()
         raise APIAuthException(
             f"Unable to get token. Error: {error_info['error']}. Detail: {error_info.get('error_description', 'None')}"
@@ -81,6 +80,7 @@ def get_token_info(username: str, password: str) -> Dict:
         "grant_type": "password",
     }
     response = requests.post(AUTH_URL, data=data)
+    print(response.content)
     check_response(response)
 
     return response_to_token_info(response)
@@ -127,7 +127,7 @@ def refresh_token_info_or_reauth(
     try:
         new_token_info = refresh_token_info(refresh_token)
     except Exception:
-        new_token_info = get_token_info(username, password)  # *self.username_password)
+        new_token_info = get_token_info(username, password)
     return new_token_info
 
 
