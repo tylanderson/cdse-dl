@@ -101,7 +101,7 @@ class SearchBase(ABC):
             "skip": skip,
             "top": top,
             "expand": expand,
-            "order_by": _format_order_by(order_by, order),
+            "orderby": _format_order_by(order_by, order),
         }
 
     @staticmethod
