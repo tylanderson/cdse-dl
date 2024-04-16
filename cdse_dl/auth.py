@@ -80,7 +80,6 @@ def get_token_info(username: str, password: str) -> Dict:
         "grant_type": "password",
     }
     response = requests.post(AUTH_URL, data=data)
-    print(response.content)
     check_response(response)
 
     return response_to_token_info(response)
