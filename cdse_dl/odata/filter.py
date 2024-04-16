@@ -1,7 +1,7 @@
 """OData Filter creation and helpers."""
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Iterable
 
 from dateutil import tz
 
@@ -202,27 +202,32 @@ class Filter:
         """
         return cls.build_filter("{field} le {value}", field, value)
 
-    def and_(self, other: "Filter") -> "Filter":
+    @classmethod
+    def and_(cls, filters: Iterable["Filter"]) -> "Filter":
         """And filter.
 
         Args:
-            other (Filter): filter to "and"
+            filters (Filter): filters to "and"
 
         Returns:
             Filter: and filter
         """
-        return Filter(f"{self.filter_string} and {other.filter_string}")
+        filter_string = " and ".join([f.filter_string for f in filters])
+        return cls(filter_string)
 
-    def or_(self, other: "Filter") -> "Filter":
+    @classmethod
+    def or_(cls, filters: Iterable["Filter"]) -> "Filter":
         """Or filter.
 
         Args:
-            other (Filter): filter to "or"
+            filters (Filter): filters to "or"
 
         Returns:
             Filter: or filter
         """
-        return Filter(f"({self.filter_string} or {other.filter_string})")
+        filter_string = " or ".join([f.filter_string for f in filters])
+        filter_string = f"({filter_string})"
+        return cls(filter_string)
 
     def not_(self) -> "Filter":
         """Not filter.

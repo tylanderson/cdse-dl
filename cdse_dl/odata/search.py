@@ -4,7 +4,6 @@ import logging
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
-from functools import reduce
 from typing import Dict, List, Literal, Optional, Sequence, Union
 
 import requests
@@ -362,7 +361,7 @@ def _filter_from_datetime_components(
         if len(filters) == 1:
             return filters[0]
         else:
-            return filters[0].and_(filters[1])
+            return Filter.and_(filters)
     else:
         raise Exception(
             "too many/few datetime components "
@@ -484,4 +483,4 @@ def build_filter_string(
     if len(filters) == 1:
         return str(filters[0])
     else:
-        return str(reduce(lambda a, b: a.and_(b), filters))
+        return str(Filter.and_(filters))
