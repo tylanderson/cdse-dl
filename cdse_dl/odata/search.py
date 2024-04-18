@@ -187,6 +187,7 @@ class ProductSearch(SearchBase):
         self,
         collection: Optional[str] = None,
         name: Optional[str] = None,
+        product_id: Optional[str] = None,
         date: Optional[DatetimeLike] = None,
         publication_date: Optional[DatetimeLike] = None,
         area: Optional[GeometryLike] = None,
@@ -215,6 +216,7 @@ class ProductSearch(SearchBase):
         filter = build_filter_string(
             collection=collection,
             name=name,
+            product_id=product_id,
             date=date,
             publication_date=publication_date,
             area=area,

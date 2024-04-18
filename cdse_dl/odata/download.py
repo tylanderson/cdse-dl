@@ -7,6 +7,8 @@ from typing import Any, Dict, Iterable, Optional
 
 from tqdm.auto import tqdm
 
+from cdse_dl.odata.search import ProductSearch
+
 from ..auth import CDSEAuthSession, Credentials
 
 try:
@@ -137,6 +139,63 @@ class Downloader:
             futures = [
                 pool.submit(self.download, product, path, check) for product in products
             ]
+
+    def _download_from_name_or_id(
+        self,
+        path: str,
+        collection: Optional[str] = None,
+        name: Optional[str] = None,
+        product_id: Optional[str] = None,
+        check: bool = True,
+    ):
+        """Download from name or id.
+
+        Args:
+            path (str): path to download to
+            collection (Optional[str], optional): collection to download from. Defaults to None.
+            name (Optional[str], optional): product name. Defaults to None.
+            product_id (Optional[str], optional): product id. Defaults to None.
+            check (bool, optional): check the downloaded file against checksums. Defaults to True.
+        """
+        if name is None and product_id is None:
+            raise ValueError("must provide one of `name` or `product_id`")
+        search = ProductSearch(collection=collection, name=name, product_id=product_id)
+        product = search.get(1)[0]
+        self.download(product, path, check)
+
+    def download_from_id(
+        self,
+        collection: str,
+        product_id: str,
+        path: str,
+        check: bool = True,
+    ):
+        """Download from product id.
+
+        Args:
+            collection (str): collection to download from
+            product_id (str): product product id
+            path (str): path to download to
+            check (bool, optional): check the downloaded file against checksums. Defaults to True.
+        """
+        self._download_from_name_or_id(path, collection, None, product_id, check)
+
+    def download_from_name(
+        self,
+        collection: str,
+        name: str,
+        path: str,
+        check: bool = True,
+    ):
+        """Download from product name.
+
+        Args:
+            collection (str): collection to download from
+            name (str): product name
+            path (str): path to download to
+            check (bool, optional): check the downloaded file against checksums. Defaults to True.
+        """
+        self._download_from_name_or_id(path, collection, name, None, check)
 
     def _download_url(self, url: str, path: Any, chunk_size: int = 2**13):
         """Download a CDSE url to path.
