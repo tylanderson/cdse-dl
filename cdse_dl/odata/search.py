@@ -12,8 +12,8 @@ from dateutil.parser import parse as dt_parse
 from shapely.geometry import MultiPolygon, shape
 from shapely.geometry.base import BaseGeometry
 
-from ..types import DatetimeLike, GeometryLike
-from .filter import AttributeFilter, Filter, make_datetime_utc
+from cdse_dl.odata.filter import AttributeFilter, Filter, make_datetime_utc
+from cdse_dl.types import DatetimeLike, GeometryLike
 
 AREA_PATTERN = "OData.CSC.Intersects(area=geography'SRID=4326;{wkt}')"
 DELETION_CAUSES = [

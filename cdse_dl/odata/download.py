@@ -7,9 +7,8 @@ from typing import Any, Dict, Iterable, Optional
 
 from tqdm.auto import tqdm
 
+from cdse_dl.auth import CDSEAuthSession, Credentials
 from cdse_dl.odata.search import ProductSearch
-
-from ..auth import CDSEAuthSession, Credentials
 
 try:
     import blake3
