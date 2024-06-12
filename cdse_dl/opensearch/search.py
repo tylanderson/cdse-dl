@@ -25,7 +25,6 @@ def handle_response(response: requests.Response) -> None:
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(response.json())
         try:
             response_detail = response.json()["detail"]
             error_msg = response_detail["ErrorMessage"].rstrip(".")
@@ -154,7 +153,6 @@ class ProductSearch:
             response = requests.get(url, params=params)
             handle_response(response)
             content = response.json()
-            print(content)
         except Exception as e:
             raise e
         return content
