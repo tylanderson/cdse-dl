@@ -193,7 +193,7 @@ class ProductSearch(SearchBase):
         area: Optional[GeometryLike] = None,
         skip: Optional[int] = None,
         top: Optional[int] = 1000,
-        order_by: Optional[str] = None,
+        order_by: Optional[str] = "ContentDate/Start",
         order: Optional[Literal["asc", "desc"]] = "asc",
         expand: Optional[str] = None,
         filters: Optional[List[Filter]] = None,
