@@ -4,16 +4,16 @@ import logging
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
-from typing import Dict, List, Literal, Optional, Sequence, Union
+from typing import Dict, List, Literal, Optional, Union
 
 import requests
 import shapely.wkt
-from dateutil.parser import parse as dt_parse
 from shapely.geometry import MultiPolygon, shape
 from shapely.geometry.base import BaseGeometry
 
-from cdse_dl.odata.filter import AttributeFilter, Filter, make_datetime_utc
+from cdse_dl.odata.filter import AttributeFilter, Filter
 from cdse_dl.types import DatetimeLike, GeometryLike
+from cdse_dl.utils import parse_datetime_to_components
 
 AREA_PATTERN = "OData.CSC.Intersects(area=geography'SRID=4326;{wkt}')"
 DELETION_CAUSES = [
@@ -306,42 +306,10 @@ def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[
         return None
 
 
-def _parse_datetime_to_components(
-    value: DatetimeLike,
-) -> List[Optional[datetime]]:
-    """Convert DatetimeLike to list of datetimes.
-
-    Args:
-        value (DatetimeLike): DatetimeLike to convert
-
-    Returns:
-        Optional[List[Optional[datetime]]]: datetime components
-    """
-    components: Sequence[Union[str, datetime]]
-
-    if isinstance(value, datetime):
-        return [make_datetime_utc(value)]
-    elif isinstance(value, str):
-        components = value.split("/")
-    else:
-        components = value  # type: ignore
-
-    datetime_components: List[Optional[datetime]] = []
-    for component in components:
-        if component:
-            if isinstance(component, str):
-                component = dt_parse(component)
-            datetime_components.append(make_datetime_utc(component))
-        else:
-            datetime_components.append(None)
-
-    return datetime_components
-
-
 def _filter_from_datetime_components(
     components: List[Optional[datetime]], field: str
 ) -> Filter:
-    """Build Filter from datetime comomenets.
+    """Build Filter from datetime components.
 
     Args:
         components (Optional[List[datetime]]): datetime component
@@ -351,24 +319,17 @@ def _filter_from_datetime_components(
         Optional[Filter]: datetime filter
     """
     filters = []
-    if len(components) == 1:
-        return Filter.gte(field, components[0])
-    elif len(components) == 2:
-        if all(c is None for c in components):
-            raise Exception("cannot create a double open-ended interval")
-        if components[0] is not None:
-            filters.append(Filter.gte(field, components[0]))
-        if components[1] is not None:
-            filters.append(Filter.lt(field, components[1]))
-        if len(filters) == 1:
-            return filters[0]
-        else:
-            return Filter.and_(filters)
+
+    if components[0] is not None:
+        filters.append(Filter.gte(field, components[0]))
+    if components[1] is not None:
+        filters.append(Filter.lt(field, components[1]))
+
+    # AND the filters if we have both dates
+    if len(filters) == 1:
+        return filters[0]
     else:
-        raise Exception(
-            "too many/few datetime components "
-            f"(min=1, max=2, actual={len(components)}): {components}"
-        )
+        return Filter.and_(filters)
 
 
 def build_datetime_filter(value: DatetimeLike, field: str) -> Filter:
@@ -385,7 +346,7 @@ def build_datetime_filter(value: DatetimeLike, field: str) -> Filter:
     Returns:
         Optional[Filter]: datetime filter
     """
-    components = _parse_datetime_to_components(value)
+    components = parse_datetime_to_components(value)
     return _filter_from_datetime_components(components, field)
 
 
