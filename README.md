@@ -225,3 +225,24 @@ downloader = Downloader()
 downloader.download_all(products, "tmp")
 ```
 
+If you want to interact with files over the s3 api, you can do so using the s3fs session from `get_s3fs_session`, which authorizes you to the CDSE s3 api.
+
+This endpoint may be higher performance from my testing.
+
+```python
+from cdse_dl.auth import get_s3fs_session
+from fsspec.callbacks import TqdmCallback
+
+fs = get_s3fs_session()
+tqdm_kwargs = {"unit":"files"}
+
+remote_path = "eodata/Sentinel-2/MSI/L1C/2021/07/11/S2B_MSIL1C_20210711T095029_N0301_R079_T34UEC_20210711T110140.SAFE"
+local_path = "S2B_MSIL1C_20210711T095029_N0301_R079_T34UEC_20210711T110140.SAFE"
+
+_ = fs.get(
+    remote_path,
+    local_path,
+    recursive=True,
+    callback=TqdmCallback(tqdm_kwargs=tqdm_kwargs),
+)
+```
