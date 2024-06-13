@@ -14,6 +14,7 @@ The structure of this client takes inspiration from a lot of clients I have used
 - [x] Auth
     - [x] create tokens
     - [x] refresh tokens
+    - [x] s3 auth
 - [ ] OData
     - [x] query products
     - [X] query deleted products 
