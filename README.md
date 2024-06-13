@@ -2,7 +2,7 @@
 
 Clients for searching and downloading data from Copernicus Data Space Ecosystem.
 
-The structure of this client takes insperation from a lot of clients I have used of the years. I designed some patterns around what I liked and found helpful and powerful in them.
+The structure of this client takes inspiration from a lot of clients I have used of the years. I designed some patterns around what I liked and found helpful and powerful in them.
 
 - [sentinelsat](https://github.com/sentinelsat/sentinelsat): downloading
 - [NASA python-cmr](https://github.com/nasa/python_cmr): auth, searching products
