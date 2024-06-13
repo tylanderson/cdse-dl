@@ -91,7 +91,9 @@ class Downloader:
             thread_name_prefix="cdse-dl",
         )
 
-    def download(self, product: Dict, path: Any, check: bool = True):
+    def download(
+        self, product: Dict, path: Any, check: bool = True, quiet: bool = False
+    ):
         """Download product info to specified path.
 
         If `check` is `True`, with attempt to check the file for completeness
@@ -101,6 +103,7 @@ class Downloader:
             product (Dict): product info
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
+            quiet (bool): disable progress bar. Defaults to False.
         """
         try:
             product_id = product["Id"]
@@ -113,7 +116,7 @@ class Downloader:
         path.parent.mkdir(parents=True, exist_ok=True)
         download_url = f"{BASE_URL}({product_id})/$value"
 
-        self._download_url(download_url, path)
+        self._download_url(download_url, path, quiet=quiet)
 
         if check:
             if not product["Checksum"]:
@@ -125,7 +128,9 @@ class Downloader:
                         "Checksum of downloaded file does not match product info"
                     )
 
-    def download_all(self, products: Iterable[Dict], path: Any, check: bool = True):
+    def download_all(
+        self, products: Iterable[Dict], path: Any, check: bool = True, **kwargs
+    ):
         """Download product info to specified path.
 
         If `check` is `True`, with attempt to check the file for completeness
@@ -140,7 +145,8 @@ class Downloader:
         """
         with self.dl_executor as pool:
             futures = [
-                pool.submit(self.download, product, path, check) for product in products
+                pool.submit(self.download, product, path, check, **kwargs)
+                for product in products
             ]
 
     def _download_from_name_or_id(
@@ -150,6 +156,7 @@ class Downloader:
         name: Optional[str] = None,
         product_id: Optional[str] = None,
         check: bool = True,
+        **kwargs,
     ):
         """Download from name or id.
 
@@ -164,14 +171,10 @@ class Downloader:
             raise ValueError("must provide one of `name` or `product_id`")
         search = ProductSearch(collection=collection, name=name, product_id=product_id)
         product = search.get(1)[0]
-        self.download(product, path, check)
+        self.download(product, path, check, **kwargs)
 
     def download_from_id(
-        self,
-        collection: str,
-        product_id: str,
-        path: str,
-        check: bool = True,
+        self, collection: str, product_id: str, path: str, check: bool = True, **kwargs
     ):
         """Download from product id.
 
@@ -181,14 +184,12 @@ class Downloader:
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
         """
-        self._download_from_name_or_id(path, collection, None, product_id, check)
+        self._download_from_name_or_id(
+            path, collection, None, product_id, check, **kwargs
+        )
 
     def download_from_name(
-        self,
-        collection: str,
-        name: str,
-        path: str,
-        check: bool = True,
+        self, collection: str, name: str, path: str, check: bool = True, **kwargs
     ):
         """Download from product name.
 
@@ -198,28 +199,59 @@ class Downloader:
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
         """
-        self._download_from_name_or_id(path, collection, name, None, check)
+        self._download_from_name_or_id(path, collection, name, None, check, **kwargs)
 
-    def _download_url(self, url: str, path: Any, chunk_size: int = 2**13):
+    def _download_url(
+        self, url: str, path: Any, chunk_size: int = 2**13, quiet: bool = False
+    ):
         """Download a CDSE url to path.
 
         Args:
             url (str): url to download
             path (Any): path to save file as
             chunk_size (int, optional): chunk size to download in. Defaults to 2**13.
+            quiet (bool): disable progress bar. Defaults to False.
         """
-        response = self.session.get(url, stream=True)
+        path = Path(path)
+        if path.exists():
+            mode = "ab"
+            downloaded_bytes = path.stat().st_size
+            headers = {"Range": "bytes={}-".format(downloaded_bytes)}
+
+        else:
+            mode = "wb"
+            downloaded_bytes = 0
+            headers = None
+
+        response = self.session.get(url, stream=True, headers=headers)
         response.raise_for_status()
         length = int(response.headers["Content-Length"])
         name = re.findall("filename=(.+)", response.headers["content-disposition"])[0]
-        with tqdm(
+
+        # already downloaded
+        if downloaded_bytes == length:
+            logger.info(f"Already Downloaded: {name}")
+            return
+
+        # downloaded but larger than expected size
+        elif downloaded_bytes > length:
+            path.unlink()
+            mode = "wb"
+            downloaded_bytes = 0
+            headers = None
+
+        progress_bar = tqdm(
             desc=f"Downloading {name}",
             total=length,
             unit="B",
             unit_scale=True,
-        ) as progress_bar:
-            with open(path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=chunk_size):
-                    if chunk:
-                        file.write(chunk)
-                        progress_bar.update(len(chunk))
+            initial=downloaded_bytes,
+            disable=quiet,
+        )
+
+        with open(path, mode) as file:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    file.write(chunk)
+                    progress_bar.update(len(chunk))
+        progress_bar.close()
