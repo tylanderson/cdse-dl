@@ -22,9 +22,9 @@ The structure of this client takes inspiration from a lot of clients I have used
 - [x] OpenSearch
     - [x] Query products
 - [x] Download products
-        - [x] download single product
-        - [x] download multiple products in parallel
-        - [x] download by id or name
+    - [x] download single product
+    - [x] download multiple products in parallel
+    - [x] download by id or name
 - [ ] Subscriptions?
 - [ ] CLI?
 
