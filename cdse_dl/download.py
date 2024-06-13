@@ -102,8 +102,12 @@ class Downloader:
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
         """
-        product_id = product["Id"]
-        product_name = product["Name"]
+        try:
+            product_id = product["Id"]
+            product_name = product["Name"]
+        except KeyError:
+            product_id = product["id"]
+            product_name = product["properties"]["title"]
 
         path = Path(path) / product_name
         path.parent.mkdir(parents=True, exist_ok=True)
