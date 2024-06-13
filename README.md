@@ -1,6 +1,13 @@
 # CDSE Downloader
 
-Clients for searching and downloading data from Copernicus Data Space Ecosystem
+Clients for searching and downloading data from Copernicus Data Space Ecosystem.
+
+The structure of this client takes insperation from a lot of clients I have used of the years. I designed some patterns around what I liked and found helpful and powerful in them.
+
+- [sentinelsat](https://github.com/sentinelsat/sentinelsat): downloading
+- [NASA python-cmr](https://github.com/nasa/python_cmr): auth, searching products
+- [pystac-client](https://github.com/stac-utils/pystac-client): datetime and aoi parsing
+- [Google Earth Engine](https://github.com/google/earthengine-api): filters
 
 ## TODO
 
@@ -12,14 +19,12 @@ Clients for searching and downloading data from Copernicus Data Space Ecosystem
     - [X] query deleted products 
     - [ ] query by list
     - [ ] query nodes
-    - [ ] download products
+- [x] OpenSearch
+    - [x] Query products
+- [x] Download products
         - [x] download single product
         - [x] download multiple products in parallel
-        - [ ] download by id (for opensearch)
-- [ ] OpenSearch
-    - [ ] Query products
-    - [ ] Download products
-        - [ ] Connect to OData
+        - [x] download by id or name
 - [ ] Subscriptions?
 - [ ] CLI?
 
@@ -160,13 +165,32 @@ search = DeletedProductSearch(
 )
 search.hits()
 ```
+### OpenSearch
+
+#### Product Search
+
+### OData
+
+#### Product Search
+
+```python
+from cdse_dl.opensearch.search import ProductSearch
+
+search = ProductSearch(
+    collection="Sentinel2",
+    point=(12.4577739,41.9077492),
+    product_type="S2MSI1C",
+    date="2000-01-01/2024-05-01",
+)
+items = list(search.get(10))
+```
 
 ### Download
 
 To download a product, use the Downloader to manage downloading.
 ```python
 from cdse_dl.odata.search import ProductSearch
-from cdse_dl.odata.download import Downloader
+from cdse_dl.download import Downloader
 
 name = "S2A_MSIL1C_20200116T100341_N0208_R122_T33TUH_20200116T103621.SAFE"
 
@@ -178,7 +202,7 @@ downloader.download(product, "tmp")
 
 You can auth from environment variables, netrc, or pass your own personal credentials.
 ```python
-from cdse_dl.odata.download import Downloader
+from cdse_dl.download import Downloader
 from cdse_dl.auth import Credentials
 
 creds = Credentials.from_login("username", "password")
@@ -187,7 +211,7 @@ downloader = Downloader(credentials=creds)
 
 To download multiple products, use `download_all`. The download manager will manage the 4 concurrent product limit of downloads on the session.
 ```python
-from cdse_dl.odata.download import Downloader
+from cdse_dl.download import Downloader
 from cdse_dl.odata.filter import AttributeFilter
 from cdse_dl.odata.search import ProductSearch
 
@@ -200,3 +224,4 @@ products = ProductSearch(collection="SENTINEL-2",filters=filters).get(5)
 downloader = Downloader()
 downloader.download_all(products, "tmp")
 ```
+
