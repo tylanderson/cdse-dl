@@ -181,7 +181,7 @@ class ProductSearch(SearchBase):
         "PublicationDate",
         "ModificationDate",
     ]
-    expand_options = ["Assets", "Attributes"]
+    expand_options = ["Assets", "Attributes", "Locations"]
 
     def __init__(
         self,
