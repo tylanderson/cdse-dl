@@ -55,9 +55,23 @@ search = ProductSearch(
 search.get(10)
 ```
 
-You `filters` to build complex query patterns using OData's ability to filter on Attributes of the products. Use `or_`, `and_` or `not_` to combine or invert filters.
+To see what collection, attributes, and attribute types are available and can be used to search with, check the following example.
+```python
+from cdse_dl.odata import get_attribute_type, get_collection_attributes, get_collections
 
-Any filters passed in the the list are `and`-ed together to build the final string.
+# get all collections that can be searched with
+collections = get_collections()
+
+# get all attributes for a collection
+attributes = get_collection_attributes("SENTINEL-1")
+
+# get the type the attribute is expected to be
+attr_type = get_attribute_type("SENTINEL-1", "sliceNumber")
+```
+
+OData searching allows the use of `filters` to build complex query patterns using OData's ability to filter on Attributes of the products. Use `or_`, `and_` or `not_` to combine or invert filters.
+
+Any filters passed in the the list are `and`-ed together to build the final filter.
 
 Filter Methods:
 - Greater then: `gt`
