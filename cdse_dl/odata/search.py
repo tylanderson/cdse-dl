@@ -203,6 +203,7 @@ class ProductSearch(SearchBase):
         Args:
             collection (Optional[str], optional): collection name to search. Defaults to None.
             name (Optional[str], optional): product name to search. Defaults to None.
+            product_id (Optional[str], optional): product id to search. Defaults to None.
             date (Optional[DatetimeLike], optional): sensing datetime / range to search. Defaults to None.
             publication_date (Optional[DatetimeLike], optional): publication date / range to search. Defaults to None.
             area (Optional[GeometryLike], optional): area to search. Defaults to None.

@@ -1,3 +1,5 @@
+"""OData Attributes."""
+
 from functools import lru_cache
 from typing import Dict, Optional, Tuple
 

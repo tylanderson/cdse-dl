@@ -1,3 +1,5 @@
+"""CDSE auth and sessions."""
+
 import logging
 import os
 import threading
