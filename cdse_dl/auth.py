@@ -265,7 +265,7 @@ class CDSEAuthSession(requests.Session):
     def refresh_token(self):
         """Refresh the access token using the refresh token."""
         self._creds.refresh_token()
-        self.auth = self._creds._create_auth()
+        self.auth = self._create_auth()
 
     def rebuild_auth(self, prepared_request: Any, response: Any):
         """Keep headers upon redirect as long as we are on any of AUTH_DOMAINS."""
