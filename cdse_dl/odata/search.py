@@ -12,6 +12,7 @@ from shapely.geometry import MultiPolygon, shape
 from shapely.geometry.base import BaseGeometry
 
 from cdse_dl.odata.filter import AttributeFilter, Filter
+from cdse_dl.odata.utils import handle_response
 from cdse_dl.types import DatetimeLike, GeometryLike
 from cdse_dl.utils import parse_datetime_to_components
 
@@ -22,27 +23,6 @@ DELETION_CAUSES = [
     "Corrupted product",
     "Obsolete product or Other",
 ]
-
-
-def handle_response(response: requests.Response) -> None:
-    """Check response for errors.
-
-    Args:
-        response (requests.Response): response
-
-    Raises:
-        Exception: Invalid Request
-    """
-    try:
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        try:
-            response_detail = response.json()["detail"]
-        except Exception:
-            response_detail = {"message": response.text, "request_id": "N/A"}
-        raise Exception(
-            f"Request Failed: {response_detail['message']} (Request ID: {response_detail['request_id']})"
-        ) from e
 
 
 class SearchBase(ABC):

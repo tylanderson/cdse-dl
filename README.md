@@ -26,7 +26,7 @@ The structure of this client takes inspiration from a lot of clients I have used
     - [x] download single product
     - [x] download multiple products in parallel
     - [x] download by id or name
-- [ ] Subscriptions?
+- [x] Subscriptions
 - [ ] CLI?
 
 
@@ -260,4 +260,35 @@ _ = fs.get(
     recursive=True,
     callback=TqdmCallback(tqdm_kwargs=tqdm_kwargs),
 )
+```
+
+### Subscriptions
+
+Tooling to work with [CDSE subscriptions endpoint](https://documentation.dataspace.copernicus.eu/APIs/Subscriptions.html), allowing creation of subscriptions, reading, acking, etc.
+
+
+Example Usage:
+```python
+from cdse_dl.odata.filter import AttributeFilter, Filter
+from cdse_dl.subscriptions import SubscriptionClient
+
+# Subscriptions client (with credentialed session)
+client = SubscriptionClient()
+
+# OData Filter
+filter = Filter.and_([
+    Filter.eq("Collection/Name", "SENTINEL-2"),
+    AttributeFilter.eq("productType","S2MSI1C")
+])
+
+# create a subscription
+sub = client.create_subscription(filter)
+print(sub)
+
+# list current subscriptions
+subs = client.list_subscriptions()
+print(subs)
+
+# delete subscription
+client.delete_subscription(sub['Id'])
 ```
