@@ -7,9 +7,9 @@ from cdse_dl.odata.search import (
     ProductSearch,
     _filter_from_datetime_components,
     _format_order_by,
-    _parse_datetime_to_components,
     build_area_filter,
 )
+from cdse_dl.utils import parse_datetime_to_components
 
 
 @pytest.mark.default_cassette("search_s2_by_name.yaml")
@@ -73,26 +73,23 @@ def test__format_order_by():
 
 def test__parse_datetime_to_components():
     """Test conversion to components."""
-    c = _parse_datetime_to_components("2020-01-01/2020-01-02")
-    assert len(c) == 2
+    c = parse_datetime_to_components("2020-01-01/2020-01-02")
     assert c[0].isoformat() == "2020-01-01T00:00:00+00:00"
     assert c[1].isoformat() == "2020-01-02T00:00:00+00:00"
 
-    c = _parse_datetime_to_components("2020-01-01")
-    assert len(c) == 1
+    c = parse_datetime_to_components("2020-01-01")
     assert c[0].isoformat() == "2020-01-01T00:00:00+00:00"
+    assert c[1] is None
 
-    c = _parse_datetime_to_components([datetime(2020, 1, 1), datetime(2020, 1, 2)])
-    assert len(c) == 2
+    c = parse_datetime_to_components([datetime(2020, 1, 1), datetime(2020, 1, 2)])
     assert c[0].isoformat() == "2020-01-01T00:00:00+00:00"
     assert c[1].isoformat() == "2020-01-02T00:00:00+00:00"
 
-    c = _parse_datetime_to_components(datetime(2020, 1, 1))
-    assert len(c) == 1
+    c = parse_datetime_to_components(datetime(2020, 1, 1))
     assert c[0].isoformat() == "2020-01-01T00:00:00+00:00"
+    assert c[1] is None
 
-    c = _parse_datetime_to_components(["2020-01-01", datetime(2020, 1, 2)])
-    assert len(c) == 2
+    c = parse_datetime_to_components(["2020-01-01", datetime(2020, 1, 2)])
     assert c[0].isoformat() == "2020-01-01T00:00:00+00:00"
     assert c[1].isoformat() == "2020-01-02T00:00:00+00:00"
 
@@ -104,9 +101,6 @@ def test__filter_from_datetime_components():
         [datetime(2020, 1, 1), datetime(2020, 1, 2)], "date"
     )
     f.filter_string == "date ge 2020-01-01T00:00:00Z and date lt 2020-01-02T00:00:00Z"
-    # test one datetime
-    f = _filter_from_datetime_components([datetime(2020, 1, 1)], "date")
-    f.filter_string == "date ge 2020-01-01T00:00:00Z"
     # test right open ended
     f = _filter_from_datetime_components([datetime(2020, 1, 1), None], "date")
     f.filter_string == "date ge 2020-01-01T00:00:00Z"
@@ -115,16 +109,16 @@ def test__filter_from_datetime_components():
     f.filter_string == "date lt 2020-01-02T00:00:00Z"
     # test double open ended
     with pytest.raises(Exception) as e:
-        f = _filter_from_datetime_components([None, None], "date")
+        f = parse_datetime_to_components([None, None])
     assert str(e.value) == "cannot create a double open-ended interval"
     # test empty list
     with pytest.raises(Exception) as e:
-        f = _filter_from_datetime_components([], "date")
+        f = parse_datetime_to_components([])
     assert "too many/few datetime components" in str(e.value)
     # test more than 2 datetimes
     with pytest.raises(Exception) as e:
-        f = _filter_from_datetime_components(
-            [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)], "date"
+        f = parse_datetime_to_components(
+            [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)]
         )
     assert "too many/few datetime components" in str(e.value)
 

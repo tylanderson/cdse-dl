@@ -39,12 +39,12 @@ def parse_datetime_to_components(
         else:
             datetime_components.append(None)
 
-    if all(c is None for c in datetime_components):
-        raise Exception("cannot create a double open-ended interval")
-    elif len(datetime_components) != 2:
+    if len(datetime_components) != 2:
         raise Exception(
             "too many/few datetime components "
             f"(expected=2, actual={len(components)}): {components}"
         )
+    elif all(c is None for c in datetime_components):
+        raise Exception("cannot create a double open-ended interval")
 
     return datetime_components
