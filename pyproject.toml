@@ -1,6 +1,6 @@
 [project]
 name = "cdse-dl"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 description = "Clients for interacting with Copernicus Data Space Ecosystem"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,6 +22,7 @@ dev-dependencies = [
     "requests-mock>=1.12.1",
     "ruff>=0.6.4",
     "ipykernel>=6.29.5",
+    "twine>=5.1.1",
 ]
 
 [tool.ruff]
