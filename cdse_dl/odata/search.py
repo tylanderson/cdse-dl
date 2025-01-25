@@ -93,6 +93,7 @@ class SearchBase(ABC):
     @staticmethod
     def _get(url, params):
         try:
+            logging.debug(f"GET with params: {params}")
             response = requests.get(url, params=params)
             handle_response(response)
             content = response.json()
@@ -460,7 +461,7 @@ def build_filter_string(
     if extra_filters:
         filters += extra_filters
 
-    logging.debug(filters)
+    logging.debug(f"Using Filters: {filters}")
 
     if len(filters) == 0:
         return None
