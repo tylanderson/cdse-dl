@@ -62,6 +62,10 @@ def test_invalid_search_params():
         _ = ProductSearch(order="test")
     assert "Invalid `order` " in str(e.value)
 
+    with pytest.raises(ValueError) as e:
+        _ = ProductSearch(select=["test"])
+    assert "Invalid `select` " in str(e.value)
+
 
 def test__format_order_by():
     """Test formatting order_by and order."""

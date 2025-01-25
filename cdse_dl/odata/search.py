@@ -32,6 +32,7 @@ class SearchBase(ABC):
     expand_options: List[str] = []
     order_by_options: List[str] = []
     order_options: List[str] = ["asc", "desc"]
+    select_options: List[str] = []
 
     def __init__(
         self,
@@ -41,6 +42,7 @@ class SearchBase(ABC):
         order_by: Optional[str] = None,
         order: Optional[Literal["asc", "desc"]] = "asc",
         expand: Optional[str] = None,
+        select: Optional[List[str]] = ["*"],
     ):
         """Search OData endpoint.
 
@@ -74,6 +76,10 @@ class SearchBase(ABC):
             raise ValueError(
                 f"Invalid `order` '{order}', must be one of {self.order_options}"
             )
+        if select is not None and any(i not in self.select_options for i in select):
+            raise ValueError(
+                f"Invalid `select` '{select}', only allowed from of {self.select_options}"
+            )
 
         self._parameters = {
             "filter": filter_string,
@@ -81,6 +87,7 @@ class SearchBase(ABC):
             "top": top,
             "expand": expand,
             "orderby": _format_order_by(order_by, order),
+            "select": select,
         }
 
     @staticmethod
@@ -162,6 +169,23 @@ class ProductSearch(SearchBase):
         "ModificationDate",
     ]
     expand_options = ["Assets", "Attributes", "Locations"]
+    select_options: List[str] = [
+        "Id",
+        "Name",
+        "ContentType",
+        "ContentLength",
+        "OriginDate",
+        "PublicationDate",
+        "ModificationDate",
+        "Online",
+        "EvictionDate",
+        "S3Path",
+        "Checksum",
+        "ContentDate",
+        "Footprint",
+        "Geofootprint",
+        "*",
+    ]
 
     def __init__(
         self,
@@ -176,6 +200,7 @@ class ProductSearch(SearchBase):
         order_by: Optional[str] = "ContentDate/Start",
         order: Optional[Literal["asc", "desc"]] = "asc",
         expand: Optional[str] = None,
+        select: Optional[List[str]] = ["*"],
         filters: Optional[List[Filter]] = None,
     ):
         """Search OData endpoint for products.
@@ -203,7 +228,7 @@ class ProductSearch(SearchBase):
             area=area,
             extra_filters=filters,
         )
-        super().__init__(filter, skip, top, order_by, order, expand)
+        super().__init__(filter, skip, top, order_by, order, expand, select)
 
 
 class DeletedProductSearch(SearchBase):
@@ -216,6 +241,20 @@ class DeletedProductSearch(SearchBase):
         "DeletionDate",
     ]
     expand_options = ["Attributes"]
+    select_options: List[str] = [
+        "Id",
+        "Name",
+        "ContentType",
+        "ContentLength",
+        "OriginDate",
+        "DeletionDate",
+        "DeletionCause",
+        "Checksum",
+        "ContentDate",
+        "Footprint",
+        "Geofootprint",
+        "*",
+    ]
 
     def __init__(
         self,
@@ -232,6 +271,7 @@ class DeletedProductSearch(SearchBase):
         order_by: Optional[str] = None,
         order: Optional[Literal["asc", "desc"]] = "asc",
         expand: Optional[str] = None,
+        select: Optional[List[str]] = ["*"],
         filters: Optional[List[Filter]] = None,
     ):
         """Search OData endpoint for deleted products.
@@ -263,7 +303,7 @@ class DeletedProductSearch(SearchBase):
             area=area,
             extra_filters=filters,
         )
-        super().__init__(filter, skip, top, order_by, order, expand)
+        super().__init__(filter, skip, top, order_by, order, expand, select)
 
 
 def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[str]:
