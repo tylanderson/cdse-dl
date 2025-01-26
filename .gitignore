@@ -1,3 +1,5 @@
+.DS_Store
+
 # python generated files
 __pycache__/
 *.py[oc]

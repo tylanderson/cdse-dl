@@ -58,29 +58,6 @@ class SearchBase(ABC):
         Returns:
             Dict[str, Any]: entries
         """
-        if top is not None and (top > 1000 or top < 0):
-            raise ValueError("top must be between 0 and 1000")
-
-        if skip is not None and (skip > 10000 or skip < 0):
-            raise ValueError("skip must be between 0 and 10000")
-
-        if expand is not None and (expand not in self.expand_options):
-            raise ValueError(
-                f"Invalid `expand` '{expand}', must be one of {self.expand_options}"
-            )
-        if order_by is not None and (order_by not in self.order_by_options):
-            raise ValueError(
-                f"Invalid `order_by` '{order_by}', must be one of {self.order_by_options}"
-            )
-        if order is not None and (order not in self.order_options):
-            raise ValueError(
-                f"Invalid `order` '{order}', must be one of {self.order_options}"
-            )
-        if select is not None and any(i not in self.select_options for i in select):
-            raise ValueError(
-                f"Invalid `select` '{select}', only allowed from of {self.select_options}"
-            )
-
         self._parameters = {
             "filter": filter_string,
             "skip": skip,

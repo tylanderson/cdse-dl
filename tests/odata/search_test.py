@@ -10,18 +10,18 @@ from cdse_dl.odata.search import (
     build_area_filter,
 )
 from cdse_dl.utils import parse_datetime_to_components
-
+from cdse_dl.odata.utils import CopernicusODataError
 
 @pytest.mark.default_cassette("search_s2_by_name.yaml")
 @pytest.mark.vcr
 def test_search():
     """Test search."""
-    name = "S2B_MSIL1C_20210711T095029_N0301_R079_T34UEC_20210711T110140.SAFE"
+    name = "S2A_MSIL1C_20200116T100341_N0500_R122_T33TUH_20230428T195719.SAFE"
     search = ProductSearch(name=name)
     search_params = search._parameters
     assert (
         search_params["filter"]
-        == "Name eq 'S2B_MSIL1C_20210711T095029_N0301_R079_T34UEC_20210711T110140.SAFE'"
+        == "Name eq 'S2A_MSIL1C_20200116T100341_N0500_R122_T33TUH_20230428T195719.SAFE'"
     )
 
     products = search.get(1)
@@ -31,40 +31,37 @@ def test_search():
     hits = search.hits()
     assert hits == 1
 
-
+@pytest.mark.default_cassette("invalid_search_params.yaml")
+@pytest.mark.vcr
 def test_invalid_search_params():
     """Test invalid search params."""
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(top=-1)
-    assert str(e.value) == "top must be between 0 and 1000"
+    with pytest.raises(CopernicusODataError, match="Input should be greater than or equal to 0") as e:
+        _ = ProductSearch(top=-1).get(1)
+    assert "'loc': ['query', '$top']" in str(e.value)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(top=1001)
-    assert str(e.value) == "top must be between 0 and 1000"
+    with pytest.raises(CopernicusODataError, match="Input should be less than or equal to 1000") as e:
+        _ = ProductSearch(top=1001).get_all()
+    assert "'loc': ['query', '$top']" in str(e.value)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(skip=-1)
-    assert str(e.value) == "skip must be between 0 and 10000"
+    with pytest.raises(CopernicusODataError, match="Input should be greater than or equal to 0") as e:
+        _ = ProductSearch(skip=-1).get(1)
+    assert "'loc': ['query', '$skip']" in str(e.value)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(skip=10001)
-    assert str(e.value) == "skip must be between 0 and 10000"
+    with pytest.raises(CopernicusODataError, match="Input should be less than or equal to 10000") as e:
+        _ = ProductSearch(skip=10001).get(1)
+    assert "'loc': ['query', '$skip']" in str(e.value)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(expand="test")
-    assert "Invalid `expand` " in str(e.value)
+    with pytest.raises(CopernicusODataError, match="Expand parameter only accepts following values:") as e:
+        _ = ProductSearch(expand="test").get(1)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(order_by="test")
-    assert "Invalid `order_by` " in str(e.value)
+    with pytest.raises(CopernicusODataError, match="Invalid field name in the order by clause") as e:
+        _ = ProductSearch(order_by="test").get(1)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(order="test")
-    assert "Invalid `order` " in str(e.value)
+    with pytest.raises(CopernicusODataError, match="Invalid value: test") as e:
+        _ = ProductSearch(order="test").get(1)
 
-    with pytest.raises(ValueError) as e:
-        _ = ProductSearch(select=["test"])
-    assert "Invalid `select` " in str(e.value)
+    with pytest.raises(CopernicusODataError, match="Invalid field in select: test") as e:
+        _ = ProductSearch(select=["test"]).get(1)
 
 
 def test__format_order_by():

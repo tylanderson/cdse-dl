@@ -1,4 +1,9 @@
 import requests
+from requests.exceptions import HTTPError, JSONDecodeError
+
+
+class CopernicusODataError(Exception):  # noqa: D101
+    ...
 
 
 def handle_response(response: requests.Response) -> None:
@@ -12,11 +17,9 @@ def handle_response(response: requests.Response) -> None:
     """
     try:
         response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
+    except HTTPError as e:
         try:
-            response_detail = response.json()["detail"]
-        except Exception:
-            response_detail = {"message": response.text, "request_id": "N/A"}
-        raise Exception(
-            f"Request Failed: {response_detail['message']} (Request ID: {response_detail['request_id']})"
-        ) from e
+            detail = response.json()["detail"]
+        except (JSONDecodeError, KeyError):
+            detail = response.text
+        raise CopernicusODataError(f"Request Failed: {detail}") from e

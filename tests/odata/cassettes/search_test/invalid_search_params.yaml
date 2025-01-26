@@ -1,0 +1,360 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=-1&%24orderby=ContentDate%2FStart+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":[{"type":"greater_than_equal","loc":["query","$top"],"msg":"Input
+        should be greater than or equal to 0","input":"-1","ctx":{"error":{}}}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '148'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - 3dba72ac-a555-4e16-91ed-f818e52c4a4f
+      x-envoy-upstream-service-time:
+      - '17'
+    status:
+      code: 422
+      message: Unprocessable Entity
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=1001&%24orderby=ContentDate%2FStart+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":[{"type":"less_than_equal","loc":["query","$top"],"msg":"Input
+        should be less than or equal to 1000","input":"1001","ctx":{"error":{}}}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '147'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - 51086bf9-7816-42d4-bab2-bf5c47942850
+      x-envoy-upstream-service-time:
+      - '91'
+    status:
+      code: 422
+      message: Unprocessable Entity
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24skip=-1&%24top=1000&%24orderby=ContentDate%2FStart+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":[{"type":"greater_than_equal","loc":["query","$skip"],"msg":"Input
+        should be greater than or equal to 0","input":"-1","ctx":{"error":{}}}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '149'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:36 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - b8a58539-5d5d-47e7-b920-5599fd3d3ad4
+      x-envoy-upstream-service-time:
+      - '8'
+    status:
+      code: 422
+      message: Unprocessable Entity
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24skip=10001&%24top=1000&%24orderby=ContentDate%2FStart+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":[{"type":"less_than_equal","loc":["query","$skip"],"msg":"Input
+        should be less than or equal to 10000","input":"10001","ctx":{"error":{}}}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '150'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:36 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - 42e2aea0-cad7-407c-b14b-6f7e4fbe618d
+      x-envoy-upstream-service-time:
+      - '7'
+    status:
+      code: 422
+      message: Unprocessable Entity
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=1000&%24expand=test&%24orderby=ContentDate%2FStart+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":{"message":"Expand parameter only accepts following values:
+        Assets, Attributes, Locations.","request_id":"ff6518f2-0806-4b20-925c-540d780c5622"}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '155'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - ff6518f2-0806-4b20-925c-540d780c5622
+      x-envoy-upstream-service-time:
+      - '177'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=1000&%24orderby=test+asc&%24select=%2A
+  response:
+    body:
+      string: '{"detail":{"message":"Invalid value: Invalid field name in the order
+        by clause. Please use only ''asc'' or ''desc'' for sorting.","request_id":"8733beac-3f04-4061-9594-359f5ae4a357"}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '179'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - 8733beac-3f04-4061-9594-359f5ae4a357
+      x-envoy-upstream-service-time:
+      - '810'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=1000&%24orderby=ContentDate%2FStart+test&%24select=%2A
+  response:
+    body:
+      string: '{"detail":{"message":"Invalid value: test","request_id":"e2455c85-ae09-4720-bd76-ca8f6bfd367a"}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '96'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - e2455c85-ae09-4720-bd76-ca8f6bfd367a
+      x-envoy-upstream-service-time:
+      - '77'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://catalogue.dataspace.copernicus.eu/odata/v1/Products?%24top=1000&%24orderby=ContentDate%2FStart+asc&%24select=test
+  response:
+    body:
+      string: '{"detail":{"message":"Invalid field in select: test","request_id":"3188f009-05ec-4a38-a5a5-df98c56a1216"}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE, PATCH, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '1728000'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '106'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 26 Jan 2025 16:34:39 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      request-id:
+      - 3188f009-05ec-4a38-a5a5-df98c56a1216
+      x-envoy-upstream-service-time:
+      - '77'
+    status:
+      code: 400
+      message: Bad Request
+version: 1
