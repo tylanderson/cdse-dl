@@ -40,7 +40,7 @@ def test_invalid_search_params():
     assert "'loc': ['query', '$top']" in str(e.value)
 
     with pytest.raises(CopernicusODataError, match="Input should be less than or equal to 1000") as e:
-        _ = ProductSearch(top=1001).get_all()
+        _ = ProductSearch(top=1001).get(1)
     assert "'loc': ['query', '$top']" in str(e.value)
 
     with pytest.raises(CopernicusODataError, match="Input should be greater than or equal to 0") as e:

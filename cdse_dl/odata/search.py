@@ -80,8 +80,8 @@ class SearchBase(ABC):
 
     def _get_formatted_params(self, limit, count=False):
         params = deepcopy(self._parameters)
-        if limit:
-            params["top"] = min(params["top"], limit)
+        if limit and not params.get("top"):
+            params["top"] = limit
         params["count"] = str(count) if count else None
         params = {f"${k}": v for k, v in params.items() if v is not None}
         return params
