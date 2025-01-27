@@ -38,11 +38,11 @@ class SearchBase(ABC):
         self,
         filter_string: Optional[str] = None,
         skip: Optional[int] = None,
-        top: Optional[int] = 1000,
+        top: Optional[int] = None,
         order_by: Optional[str] = None,
-        order: Optional[Literal["asc", "desc"]] = "asc",
+        order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = ["*"],
+        select: Optional[List[str]] = None,
     ):
         """Search OData endpoint.
 
@@ -51,10 +51,10 @@ class SearchBase(ABC):
             skip (Optional[int], optional): number of entries to skip. Defaults to None.
             top (Optional[int], optional): number of entries to return. Defaults to None.
             order_by (Optional[str], optional): order entry by property. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to "asc".
+            order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to None.
             expand (Optional[str], optional): how to expand entry. Defaults to None.
             filters (Optional[List[Filter]], optional): extra filters to apply. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
 
         Returns:
             Dict[str, Any]: entries
@@ -175,11 +175,11 @@ class ProductSearch(SearchBase):
         publication_date: Optional[DatetimeLike] = None,
         area: Optional[GeometryLike] = None,
         skip: Optional[int] = None,
-        top: Optional[int] = 1000,
-        order_by: Optional[str] = "ContentDate/Start",
-        order: Optional[Literal["asc", "desc"]] = "asc",
+        top: Optional[int] = None,
+        order_by: Optional[str] = None,
+        order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = ["*"],
+        select: Optional[List[str]] = None,
         filters: Optional[List[Filter]] = None,
     ):
         """Search OData endpoint for products.
@@ -192,11 +192,11 @@ class ProductSearch(SearchBase):
             publication_date (Optional[DatetimeLike], optional): publication date / range to search. Defaults to None.
             area (Optional[GeometryLike], optional): area to search. Defaults to None.
             skip (Optional[int, optional): products to skip. Defaults to None.
-            top (Optional[int, optional): products to return per query. Defaults to 1000.
+            top (Optional[int, optional): products to return per query. Defaults to None.
             order_by (Optional[str], optional): order by attribute. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to "asc".
+            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
             filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
@@ -247,11 +247,11 @@ class DeletedProductSearch(SearchBase):
         deletion_cause: Optional[str] = None,
         area: Optional[GeometryLike] = None,
         skip: Optional[int] = None,
-        top: Optional[int] = 1000,
+        top: Optional[int] = None,
         order_by: Optional[str] = None,
-        order: Optional[Literal["asc", "desc"]] = "asc",
+        order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = ["*"],
+        select: Optional[List[str]] = None,
         filters: Optional[List[Filter]] = None,
     ):
         """Search OData endpoint for deleted products.
@@ -266,11 +266,11 @@ class DeletedProductSearch(SearchBase):
             deletion_cause (Optional[str], optional): deletion cause. Defaults to None.
             area (Optional[GeometryLike], optional): area to search. Defaults to None.
             skip (Optional[int], optional): products to skip. Defaults to None.
-            top (Optional[int], optional): products to return per query. Defaults to 1000.
+            top (Optional[int], optional): products to return per query. Defaults to None.
             order_by (Optional[str], optional): order by attribute. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to "asc".
+            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
             filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
