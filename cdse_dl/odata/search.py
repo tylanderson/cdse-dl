@@ -54,6 +54,7 @@ class SearchBase(ABC):
             order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to "asc".
             expand (Optional[str], optional): how to expand entry. Defaults to None.
             filters (Optional[List[Filter]], optional): extra filters to apply. Defaults to None.
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
 
         Returns:
             Dict[str, Any]: entries
@@ -195,6 +196,7 @@ class ProductSearch(SearchBase):
             order_by (Optional[str], optional): order by attribute. Defaults to None.
             order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to "asc".
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
             filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
@@ -268,6 +270,7 @@ class DeletedProductSearch(SearchBase):
             order_by (Optional[str], optional): order by attribute. Defaults to None.
             order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to "asc".
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
+            select (Optional[List[str]]), optional): fields to select in return response. Defaults to ["*"].
             filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(

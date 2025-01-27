@@ -144,9 +144,10 @@ class Downloader:
             products (Iterable[Dict]): multiple product infos to download
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
+            **kwargs: Arbitrary keyword arguments.
         """
         with self.dl_executor as pool:
-            futures = [
+            _ = [
                 pool.submit(self.download, product, path, check, **kwargs)
                 for product in products
             ]
@@ -168,6 +169,7 @@ class Downloader:
             name (Optional[str], optional): product name. Defaults to None.
             product_id (Optional[str], optional): product id. Defaults to None.
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
+            **kwargs: Arbitrary keyword arguments.
         """
         if name is None and product_id is None:
             raise ValueError("must provide one of `name` or `product_id`")
@@ -185,6 +187,7 @@ class Downloader:
             product_id (str): product product id
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
+            **kwargs: Arbitrary keyword arguments.
         """
         self._download_from_name_or_id(
             path, collection, None, product_id, check, **kwargs
@@ -200,6 +203,7 @@ class Downloader:
             name (str): product name
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
+            **kwargs: Arbitrary keyword arguments.
         """
         self._download_from_name_or_id(path, collection, name, None, check, **kwargs)
 

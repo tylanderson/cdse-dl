@@ -1,3 +1,5 @@
+"""Utils for ODat API."""
+
 import requests
 from requests.exceptions import HTTPError, JSONDecodeError
 

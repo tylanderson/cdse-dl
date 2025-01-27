@@ -23,6 +23,7 @@ dev-dependencies = [
     "ruff>=0.6.4",
     "ipykernel>=6.29.5",
     "twine>=5.1.1",
+    "pre-commit>=4.1.0",
 ]
 
 [tool.ruff]

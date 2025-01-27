@@ -9,8 +9,9 @@ from cdse_dl.odata.search import (
     _format_order_by,
     build_area_filter,
 )
-from cdse_dl.utils import parse_datetime_to_components
 from cdse_dl.odata.utils import CopernicusODataError
+from cdse_dl.utils import parse_datetime_to_components
+
 
 @pytest.mark.default_cassette("search_s2_by_name.yaml")
 @pytest.mark.vcr
@@ -31,36 +32,51 @@ def test_search():
     hits = search.hits()
     assert hits == 1
 
+
 @pytest.mark.default_cassette("invalid_search_params.yaml")
 @pytest.mark.vcr
 def test_invalid_search_params():
     """Test invalid search params."""
-    with pytest.raises(CopernicusODataError, match="Input should be greater than or equal to 0") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Input should be greater than or equal to 0"
+    ) as e:
         _ = ProductSearch(top=-1).get(1)
     assert "'loc': ['query', '$top']" in str(e.value)
 
-    with pytest.raises(CopernicusODataError, match="Input should be less than or equal to 1000") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Input should be less than or equal to 1000"
+    ) as e:
         _ = ProductSearch(top=1001).get(1)
     assert "'loc': ['query', '$top']" in str(e.value)
 
-    with pytest.raises(CopernicusODataError, match="Input should be greater than or equal to 0") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Input should be greater than or equal to 0"
+    ) as e:
         _ = ProductSearch(skip=-1).get(1)
     assert "'loc': ['query', '$skip']" in str(e.value)
 
-    with pytest.raises(CopernicusODataError, match="Input should be less than or equal to 10000") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Input should be less than or equal to 10000"
+    ) as e:
         _ = ProductSearch(skip=10001).get(1)
     assert "'loc': ['query', '$skip']" in str(e.value)
 
-    with pytest.raises(CopernicusODataError, match="Expand parameter only accepts following values:") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Expand parameter only accepts following values:"
+    ) as e:
         _ = ProductSearch(expand="test").get(1)
 
-    with pytest.raises(CopernicusODataError, match="Invalid field name in the order by clause") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Invalid field name in the order by clause"
+    ) as e:
         _ = ProductSearch(order_by="test").get(1)
 
     with pytest.raises(CopernicusODataError, match="Invalid value: test") as e:
         _ = ProductSearch(order="test").get(1)
 
-    with pytest.raises(CopernicusODataError, match="Invalid field in select: test") as e:
+    with pytest.raises(
+        CopernicusODataError, match="Invalid field in select: test"
+    ) as e:
         _ = ProductSearch(select=["test"]).get(1)
 
 
