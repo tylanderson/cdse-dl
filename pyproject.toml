@@ -3,7 +3,7 @@ name = "cdse-dl"
 version = "0.1.0-alpha.1"
 description = "Clients for interacting with Copernicus Data Space Ecosystem"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "blake3>=0.3.1",
     "python-dateutil>=2.7.0",
