@@ -4,7 +4,7 @@ import logging
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import requests
 import shapely.wkt
@@ -29,10 +29,10 @@ class SearchBase(ABC):
     """CDSE OData endpoint."""
 
     base_url: str = ""
-    expand_options: List[str] = []
-    order_by_options: List[str] = []
-    order_options: List[str] = ["asc", "desc"]
-    select_options: List[str] = []
+    expand_options: list[str] = []
+    order_by_options: list[str] = []
+    order_options: list[str] = ["asc", "desc"]
+    select_options: list[str] = []
 
     def __init__(
         self,
@@ -42,7 +42,7 @@ class SearchBase(ABC):
         order_by: Optional[str] = None,
         order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = None,
+        select: Optional[list[str]] = None,
     ):
         """Search OData endpoint.
 
@@ -53,11 +53,11 @@ class SearchBase(ABC):
             order_by (Optional[str], optional): order entry by property. Defaults to None.
             order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to None.
             expand (Optional[str], optional): how to expand entry. Defaults to None.
-            filters (Optional[List[Filter]], optional): extra filters to apply. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
+            filters (Optional[list[Filter]], optional): extra filters to apply. Defaults to None.
+            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
 
         Returns:
-            Dict[str, Any]: entries
+            dict[str, Any]: entries
         """
         self._parameters = {
             "filter": filter_string,
@@ -69,7 +69,7 @@ class SearchBase(ABC):
         }
 
     @staticmethod
-    def _get(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _get(url: str, params: dict[str, Any]) -> dict[str, Any]:
         try:
             logging.debug(f"GET with params: {params}")
             response = requests.get(url, params=params)
@@ -79,7 +79,7 @@ class SearchBase(ABC):
             raise e
         return dict(content)
 
-    def _get_formatted_params(self, limit: int, count: bool = False) -> Dict[str, Any]:
+    def _get_formatted_params(self, limit: int, count: bool = False) -> dict[str, Any]:
         params = deepcopy(self._parameters)
         if limit and not params.get("top"):
             params["top"] = limit
@@ -87,14 +87,14 @@ class SearchBase(ABC):
         params = {f"${k}": v for k, v in params.items() if v is not None}
         return params
 
-    def get(self, limit: int = 1000) -> List[Dict[str, Any]]:
+    def get(self, limit: int = 1000) -> list[dict[str, Any]]:
         """Get products, up to a limit if given.
 
         Args:
             limit (Optional[int], optional): optional limit to return. Defaults to 1000.
 
         Returns:
-            List[Dict]: products
+            list[dict]: products
         """
         results = []
         more_results = True
@@ -118,11 +118,11 @@ class SearchBase(ABC):
 
         return results
 
-    def get_all(self) -> List[Dict[str, Any]]:
+    def get_all(self) -> list[dict[str, Any]]:
         """Get all products.
 
         Returns:
-            List[Dict]: products
+            list[dict]: products
         """
         return self.get()
 
@@ -148,7 +148,7 @@ class ProductSearch(SearchBase):
         "ModificationDate",
     ]
     expand_options = ["Assets", "Attributes", "Locations"]
-    select_options: List[str] = [
+    select_options: list[str] = [
         "Id",
         "Name",
         "ContentType",
@@ -179,8 +179,8 @@ class ProductSearch(SearchBase):
         order_by: Optional[str] = None,
         order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = None,
-        filters: Optional[List[Filter]] = None,
+        select: Optional[list[str]] = None,
+        filters: Optional[list[Filter]] = None,
     ):
         """Search OData endpoint for products.
 
@@ -196,8 +196,8 @@ class ProductSearch(SearchBase):
             order_by (Optional[str], optional): order by attribute. Defaults to None.
             order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
-            filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
+            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
+            filters (Optional[list[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
             collection=collection,
@@ -221,7 +221,7 @@ class DeletedProductSearch(SearchBase):
         "DeletionDate",
     ]
     expand_options = ["Attributes"]
-    select_options: List[str] = [
+    select_options: list[str] = [
         "Id",
         "Name",
         "ContentType",
@@ -251,8 +251,8 @@ class DeletedProductSearch(SearchBase):
         order_by: Optional[str] = None,
         order: Optional[Literal["asc", "desc"]] = None,
         expand: Optional[str] = None,
-        select: Optional[List[str]] = None,
-        filters: Optional[List[Filter]] = None,
+        select: Optional[list[str]] = None,
+        filters: Optional[list[Filter]] = None,
     ):
         """Search OData endpoint for deleted products.
 
@@ -270,8 +270,8 @@ class DeletedProductSearch(SearchBase):
             order_by (Optional[str], optional): order by attribute. Defaults to None.
             order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
             expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[List[str]]), optional): fields to select in return response. Defaults to None.
-            filters (Optional[List[Filter]], optional): extra filters to use. Defaults to None.
+            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
+            filters (Optional[list[Filter]], optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
             collection=collection,
@@ -309,12 +309,12 @@ def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[
 
 
 def _filter_from_datetime_components(
-    components: List[Optional[datetime]], field: str
+    components: list[Optional[datetime]], field: str
 ) -> Filter:
     """Build Filter from datetime components.
 
     Args:
-        components (Optional[List[datetime]]): datetime component
+        components (Optional[list[datetime]]): datetime component
         field (str): field to build filter on
 
     Returns:
@@ -397,7 +397,7 @@ def build_filter_string(
     origin_date: Optional[DatetimeLike] = None,
     deletion_cause: Optional[str] = None,
     area: Optional[GeometryLike] = None,
-    extra_filters: Optional[List[Filter]] = None,
+    extra_filters: Optional[list[Filter]] = None,
 ) -> Optional[str]:
     """Build filter string.
 
@@ -411,12 +411,12 @@ def build_filter_string(
         origin_date (Optional[DatetimeLike], optional): origin datetime filter. Defaults to None.
         deletion_cause (Optional[str], optional): deletion cause. Defaults to None.
         area (Optional[GeometryLike], optional): area value. Defaults to None.
-        extra_filters (Optional[List[Filter]], optional): extra custom filters. Defaults to None.
+        extra_filters (Optional[list[Filter]], optional): extra custom filters. Defaults to None.
 
     Returns:
         str: filter string
     """
-    filters: List[Union[Filter, AttributeFilter]] = []
+    filters: list[Union[Filter, AttributeFilter]] = []
     if collection:
         filters.append(Filter.eq("Collection/Name", collection))
     if name:

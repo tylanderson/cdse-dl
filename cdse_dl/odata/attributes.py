@@ -1,25 +1,38 @@
 """OData Attributes."""
 
 from functools import lru_cache
-from typing import Any, Dict, Optional, Tuple
+from typing import Literal, Tuple, TypedDict
 
 import requests
 
 ATTRIBUTES_ENDPOINT = "https://catalogue.dataspace.copernicus.eu/odata/v1/Attributes"
 
 
-@lru_cache(1)
-def get_attribute_info() -> Dict[str, Any]:
+class Attribute(TypedDict):
+    """attribute of a product."""
+
+    Name: str
+    ValueType: Literal["String", "Integer", "Double", "DateTimeOffset", "Boolean"]
+
+
+CollectionAttributes = dict[str, list[Attribute]]
+
+
+@lru_cache(maxsize=1)
+def get_attribute_info() -> CollectionAttributes:
     """Get attribute info from OData.
 
     Returns:
-        Dict: attribute info
+        ProductAttributes: attribute info
     """
-    return dict(requests.get(ATTRIBUTES_ENDPOINT).json())
+    response = requests.get(ATTRIBUTES_ENDPOINT)
+    response.raise_for_status()
+    product_attributes: CollectionAttributes = response.json()
+    return product_attributes
 
 
 @lru_cache()
-def get_attribute_type(collection: str, attribute_name: str) -> Optional[str]:
+def get_attribute_type(collection: str, attribute_name: str) -> str | None:
     """Get attribute type from OData from collection and attribute name.
 
     Args:
@@ -27,7 +40,7 @@ def get_attribute_type(collection: str, attribute_name: str) -> Optional[str]:
         attribute_name (str): attribute name
 
     Returns:
-        Optional[str]: attribute type
+        str | None: attribute type
     """
     for attr in get_attribute_info()[collection]:
         if attribute_name == attr["Name"]:
@@ -58,6 +71,11 @@ def get_collection_attributes(collection: str) -> Tuple[str, ...]:
         Tuple[str, ...]: known attributes
 
     """
-    if collection not in get_collections():
-        raise ValueError(f"Invalid Collection: {collection}")
-    return tuple(attr["Name"] for attr in get_attribute_info()[collection])
+    collections = get_collections()
+    if collection not in collections:
+        raise ValueError(
+            f"Invalid collection: {collection}. Available: {sorted(collections)}"
+        )
+
+    attributes = get_attribute_info()["collection"]
+    return tuple(attr["Name"] for attr in attributes)

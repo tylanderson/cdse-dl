@@ -1,6 +1,6 @@
 """CDSE subscriptions management tooling."""
 
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from cdse_dl.auth import CDSEAuthSession, Credentials
 from cdse_dl.odata.filter import Filter
@@ -23,16 +23,16 @@ class SubscriptionClient:
     def create_subscription(
         self,
         filter: Optional[Filter] = None,
-        notification_params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        notification_params: Optional[dict[str, Any]] = None,
+    ) -> dict[str, Any]:
         """Create subscription.
 
         Args:
             filter (Optional[Filter], optional): OData Filter used to filter products that go to the subscription. Defaults to None.
-            notification_params (Dict, optional): notification params for push subscriptions. Defaults to None.
+            notification_params (dict, optional): notification params for push subscriptions. Defaults to None.
 
         Returns:
-            Dict: created subscription info
+            dict: created subscription info
         """
         params = {
             "StageOrder": True,  # only available option
@@ -61,7 +61,7 @@ class SubscriptionClient:
         r = self.session.delete(f"{SUBSCRIPTIONS_URL}({subscription_id})")
         handle_response(r)
 
-    def ack_subscription(self, subscription_id: str, ack_token: str) -> Dict[str, Any]:
+    def ack_subscription(self, subscription_id: str, ack_token: str) -> dict[str, Any]:
         """Acknowledge subscription result, removing it from the subscription.
 
         By acknowledging a result below no at the top of the subscription, all results above will also be acknowledged.
@@ -71,7 +71,7 @@ class SubscriptionClient:
             ack_token (str): result ack token
 
         Returns:
-            Dict: subscription info
+            dict: subscription info
         """
         r = self.session.post(
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Ack?$ackid={ack_token}"
@@ -81,7 +81,7 @@ class SubscriptionClient:
 
     def read_subscription(
         self, subscription_id: str, limit: int = 1
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Read subscription.
 
         Args:
@@ -89,7 +89,7 @@ class SubscriptionClient:
             limit (int, optional): result limit, max 20. Defaults to 1.
 
         Returns:
-            List[Dict]: subscription results
+            list[dict]: subscription results
         """
         r = self.session.get(
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Read?$top={limit}"
@@ -101,17 +101,17 @@ class SubscriptionClient:
         self,
         subscription_id: str,
         status: Optional[Literal["running", "paused", "cancelled"]] = None,
-        notification_params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        notification_params: Optional[dict[str, Any]] = None,
+    ) -> dict[str, Any]:
         """Update subscription.
 
         Args:
             subscription_id (str): subscription id
             status (Optional[Literal["running", "paused", "cancelled"]], optional): status. Defaults to None.
-            notification_params (Optional[Dict], optional): notification endpoint params for push subscriptions. Defaults to None.
+            notification_params (Optional[dict], optional): notification endpoint params for push subscriptions. Defaults to None.
 
         Returns:
-            Dict: updated subscription info
+            dict: updated subscription info
         """
         params = {}
         if status:
@@ -123,24 +123,24 @@ class SubscriptionClient:
         handle_response(r)
         return dict(r.json())
 
-    def subscription_info(self, subscription_id: str) -> Dict[str, Any]:
+    def subscription_info(self, subscription_id: str) -> dict[str, Any]:
         """Get subscription info.
 
         Args:
             subscription_id (str): subscription id
 
         Returns:
-            Dict: subscription info
+            dict: subscription info
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}({subscription_id})")
         handle_response(r)
         return dict(r.json())
 
-    def list_subscriptions(self) -> List[Dict[str, Any]]:
+    def list_subscriptions(self) -> list[dict[str, Any]]:
         """List subscriptions.
 
         Returns:
-            List[Dict]: list of subscription infos
+            list[dict]: list of subscription infos
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}/Info")
         handle_response(r)

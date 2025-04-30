@@ -1,7 +1,9 @@
 """OData Filter creation and helpers."""
 
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Any, Iterable
+from typing import Any, Iterable, Self
 
 from dateutil import tz
 
@@ -55,13 +57,12 @@ class Filter:
             return f"'{value}'"
         elif isinstance(value, datetime):
             return make_datetime_utc(value).isoformat().replace("+00:00", "Z")
-        # Add more types as necessary
         return str(value)
 
     @classmethod
     def build_filter(
         cls, pattern: str, field: str, value: Any, is_contains: bool = False
-    ) -> "Filter":
+    ) -> Self:
         """Build a filter from a pattern, field, and value.
 
         Args:
@@ -78,7 +79,7 @@ class Filter:
         )
 
     @classmethod
-    def eq(cls, field: str, value: Any) -> "Filter":
+    def eq(cls, field: str, value: Any) -> Self:
         """Equals filter.
 
         Args:
@@ -91,7 +92,7 @@ class Filter:
         return cls.build_filter("{field} eq {value}", field, value)
 
     @classmethod
-    def neq(cls, field: str, value: Any) -> "Filter":
+    def neq(cls, field: str, value: Any) -> Filter:
         """Not equals filter.
 
         Args:
@@ -104,7 +105,7 @@ class Filter:
         return cls.eq(field, value).not_()
 
     @classmethod
-    def contains(cls, field: str, value: Any) -> "Filter":
+    def contains(cls, field: str, value: Any) -> Self:
         """Contains filter.
 
         Args:
@@ -121,7 +122,7 @@ class Filter:
         )
 
     @classmethod
-    def startswith(cls, field: str, value: Any) -> "Filter":
+    def startswith(cls, field: str, value: Any) -> Self:
         """Starts with filter.
 
         Args:
@@ -138,7 +139,7 @@ class Filter:
         )
 
     @classmethod
-    def endswith(cls, field: str, value: Any) -> "Filter":
+    def endswith(cls, field: str, value: Any) -> Self:
         """Ends withs filter.
 
         Args:
@@ -155,7 +156,7 @@ class Filter:
         )
 
     @classmethod
-    def gt(cls, field: str, value: Any) -> "Filter":
+    def gt(cls, field: str, value: Any) -> Self:
         """Greater than filter.
 
         Args:
@@ -168,7 +169,7 @@ class Filter:
         return cls.build_filter("{field} gt {value}", field, value)
 
     @classmethod
-    def lt(cls, field: str, value: Any) -> "Filter":
+    def lt(cls, field: str, value: Any) -> Self:
         """Less than filter.
 
         Args:
@@ -181,7 +182,7 @@ class Filter:
         return cls.build_filter("{field} lt {value}", field, value)
 
     @classmethod
-    def gte(cls, field: str, value: Any) -> "Filter":
+    def gte(cls, field: str, value: Any) -> Self:
         """Greater than or equal to filter.
 
         Args:
@@ -194,7 +195,7 @@ class Filter:
         return cls.build_filter("{field} ge {value}", field, value)
 
     @classmethod
-    def lte(cls, field: str, value: Any) -> "Filter":
+    def lte(cls, field: str, value: Any) -> Self:
         """Less than or equal to filter.
 
         Args:
@@ -207,7 +208,7 @@ class Filter:
         return cls.build_filter("{field} le {value}", field, value)
 
     @classmethod
-    def and_(cls, filters: Iterable["Filter"]) -> "Filter":
+    def and_(cls, filters: Iterable[Self]) -> Self:
         """And filter.
 
         Args:
@@ -220,7 +221,7 @@ class Filter:
         return cls(filter_string)
 
     @classmethod
-    def or_(cls, filters: Iterable["Filter"]) -> "Filter":
+    def or_(cls, filters: Iterable[Self]) -> Self:
         """Or filter.
 
         Args:
@@ -233,7 +234,7 @@ class Filter:
         filter_string = f"({filter_string})"
         return cls(filter_string)
 
-    def not_(self) -> "Filter":
+    def not_(self) -> Filter:
         """Not filter.
 
         Returns:

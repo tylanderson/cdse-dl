@@ -5,7 +5,7 @@ import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional, Protocol, Self
+from typing import Any, Iterable, Optional, Protocol, Self
 
 from tqdm.auto import tqdm
 
@@ -33,13 +33,13 @@ class Hasher(Protocol):  # noqa: D101
 
 
 def _check_hash(
-    file_path: Any, product_info: Dict[str, Any], block_size: int = 1024 * 1024
+    file_path: Any, product_info: dict[str, Any], block_size: int = 1024 * 1024
 ) -> bool:
     """Compare a given MD5 checksum with one calculated from a file.
 
     Args:
         file_path (Any): file path to hash
-        product_info (Dict): CDSE product info
+        product_info (dict): CDSE product info
         block_size (int, optional): block size to read. Defaults to 1024*1024.
 
     Returns:
@@ -103,7 +103,7 @@ class Downloader:
 
     def download(
         self,
-        product: Dict[str, Any],
+        product: dict[str, Any],
         path: Any,
         check: bool = True,
         quiet: bool = False,
@@ -114,7 +114,7 @@ class Downloader:
         using checksums are provided in the product info.
 
         Args:
-            product (Dict): product info
+            product (dict): product info
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
             quiet (bool): disable progress bar. Defaults to False.
@@ -144,7 +144,7 @@ class Downloader:
 
     def download_all(
         self,
-        products: Iterable[Dict[str, Any]],
+        products: Iterable[dict[str, Any]],
         path: Any,
         check: bool = True,
         quiet: bool = False,
@@ -157,7 +157,7 @@ class Downloader:
         Downloads are limited to the max number of workers specified on Downloader creation
 
         Args:
-            products (Iterable[Dict]): multiple product infos to download
+            products (Iterable[dict]): multiple product infos to download
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
             quiet (bool): disable progress bar. Defaults to False.

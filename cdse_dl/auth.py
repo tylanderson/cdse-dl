@@ -4,7 +4,7 @@ import logging
 import os
 import threading
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Optional, Self
 from urllib.parse import urlparse
 
 import requests
@@ -48,7 +48,7 @@ def check_response(response: requests.Response) -> None:
         ) from e
 
 
-def response_to_token_info(response: requests.Response) -> Dict[str, Any]:
+def response_to_token_info(response: requests.Response) -> dict[str, Any]:
     """Get token info from response.
 
     Adds `acquired_time` to token info
@@ -57,14 +57,14 @@ def response_to_token_info(response: requests.Response) -> Dict[str, Any]:
         response (requests.Response): token info
 
     Returns:
-        Dict: token info
+        dict: token info
     """
     token_info = dict(response.json())
     token_info["acquired_time"] = time.time()
     return token_info
 
 
-def get_token_info(username: str, password: str) -> Dict[str, Any]:
+def get_token_info(username: str, password: str) -> dict[str, Any]:
     """Get token info from username password auth.
 
     Args:
@@ -72,7 +72,7 @@ def get_token_info(username: str, password: str) -> Dict[str, Any]:
         password (str): password
 
     Returns:
-        Dict: token info
+        dict: token info
     """
     logger.debug("getting token")
     data = {
@@ -87,14 +87,14 @@ def get_token_info(username: str, password: str) -> Dict[str, Any]:
     return response_to_token_info(response)
 
 
-def refresh_token_info(refresh_token: str) -> Dict[str, Any]:
+def refresh_token_info(refresh_token: str) -> dict[str, Any]:
     """Refresh token info using refresh token.
 
     Args:
         refresh_token (str): refresh token
 
     Returns:
-        Dict: fresh token info
+        dict: fresh token info
     """
     logger.debug("refreshing token")
     headers = {
@@ -114,7 +114,7 @@ def refresh_token_info(refresh_token: str) -> Dict[str, Any]:
 
 def refresh_token_info_or_reauth(
     refresh_token: str, username: str, password: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Refresh token info using refresh token, and if token is invalid or expired, use username password to re-auth.
 
     Args:
@@ -123,7 +123,7 @@ def refresh_token_info_or_reauth(
         password (str): password
 
     Returns:
-        Dict: fresh token info
+        dict: fresh token info
     """
     try:
         new_token_info = refresh_token_info(refresh_token)
@@ -180,7 +180,7 @@ class Credentials:
         self.token_info = get_token_info(self.username, self.password)
 
     @classmethod
-    def from_login(cls, username: str, password: str) -> "Credentials":
+    def from_login(cls, username: str, password: str) -> Self:
         """Create credentials from login.
 
         Args:
@@ -193,7 +193,7 @@ class Credentials:
         return cls(username, password)
 
     @classmethod
-    def from_env(cls) -> "Credentials":
+    def from_env(cls) -> Self:
         """Create credentials from environment variables.
 
         Raises:
@@ -211,7 +211,7 @@ class Credentials:
         return cls(username, password)
 
     @classmethod
-    def from_netrc(cls) -> "Credentials":
+    def from_netrc(cls) -> Self:
         """Create credentials from .netrc file.
 
         Raises:

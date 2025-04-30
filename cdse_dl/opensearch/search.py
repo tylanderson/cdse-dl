@@ -1,6 +1,6 @@
 """Search OpenSearch Endpoint."""
 
-from typing import Any, Dict, Generator, Optional, Tuple
+from typing import Any, Generator, Optional, Tuple
 
 import requests
 
@@ -63,8 +63,8 @@ def format_params(
     resolution: Optional[str] = None,
     sensor_mode: Optional[str] = None,
     status: Optional[str] = None,
-    **kwargs: Dict[str, Any],
-) -> Dict[str, Any]:
+    **kwargs: dict[str, Any],
+) -> dict[str, Any]:
     """Format params for OpenSearch.
 
     Args:
@@ -88,9 +88,9 @@ def format_params(
         **kwargs: keyword arguments to additionally format
 
     Returns:
-        Dict: formatted params
+        dict: formatted params
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     if name:
         params["productIdentifier"] = name
@@ -162,7 +162,7 @@ class ProductSearch:
         resolution: Optional[str] = None,
         sensor_mode: Optional[str] = None,
         status: Optional[str] = None,
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ) -> None:
         """Search OpenSearch.
 
@@ -188,7 +188,7 @@ class ProductSearch:
             **kwargs: keyword arguments to additionally format
 
         Returns:
-            Dict: formatted params
+            dict: formatted params
         """
         self.collection = collection
         self.params = format_params(
@@ -211,7 +211,7 @@ class ProductSearch:
         )
 
     @staticmethod
-    def _get(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _get(url: str, params: dict[str, Any]) -> dict[str, Any]:
         try:
             response = requests.get(url, params=params)
             handle_response(response)
@@ -240,7 +240,7 @@ class ProductSearch:
         sort_param: Optional[str] = None,
         sort_order: Optional[str] = None,
         limit: Optional[int] = 1000,
-    ) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[dict[str, Any], None, None]:
         """Get search results.
 
         Args:
@@ -250,7 +250,7 @@ class ProductSearch:
             limit (Optional[int], optional): result limit. Defaults to 1000.
 
         Yields:
-            Generator[Dict, None, None]: product results
+            Generator[dict, None, None]: product results
         """
         params = self.params
         params["maxRecords"] = min(page_size, limit) if limit else page_size
@@ -286,11 +286,11 @@ class ProductSearch:
                     more_results = False
                     break
 
-    def hits(self) -> Dict[str, Any]:
+    def hits(self) -> dict[str, Any]:
         """Get product hits.
 
         Returns:
-            Dict: product hits
+            dict: product hits
         """
         URL = f"{SEARCH_BASE_URL}/collections/{self.collection}/search.json"
         r = requests.get(URL, params=self.params)
