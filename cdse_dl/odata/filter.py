@@ -115,8 +115,6 @@ class Filter:
         Returns:
             Filter: contains filter
         """
-        if not isinstance(value, str):
-            raise ValueError("Value must be a string")
         return cls.build_filter(
             "contains({field},{value})", field, value, is_contains=True
         )
@@ -132,15 +130,13 @@ class Filter:
         Returns:
             Filter: contains filter
         """
-        if not isinstance(value, str):
-            raise ValueError("Value must be a string")
         return cls.build_filter(
             "startswith({field},{value})", field, value, is_contains=True
         )
 
     @classmethod
     def endswith(cls, field: str, value: Any) -> Self:
-        """Ends withs filter.
+        """Ends with filter.
 
         Args:
             field (str): field name
@@ -149,8 +145,6 @@ class Filter:
         Returns:
             Filter: contains filter
         """
-        if not isinstance(value, str):
-            raise ValueError("Value must be a string")
         return cls.build_filter(
             "endswith({field},{value})", field, value, is_contains=True
         )
@@ -247,11 +241,19 @@ class Filter:
         return Filter(pattern.format(filter_string=self.filter_string))
 
     def __str__(self) -> str:
-        """Get as string."""
+        """Get as string.
+
+        Returns:
+            str: string representation
+        """
         return self.filter_string
 
     def __repr__(self) -> str:
-        """Get as repr."""
+        """Get as repr.
+
+        Returns:
+            str: repr representation
+        """
         return f"Filter<{self.filter_string}>"
 
 
@@ -273,6 +275,9 @@ class AttributeFilter(Filter):
             field (str): field name
             value (Any): filter value
             is_contains (bool, optional): is a contains-type filter. Defaults to False.
+
+        Raises:
+            ValueError: invalid value
 
         Returns:
             AttributeFilter: built filter

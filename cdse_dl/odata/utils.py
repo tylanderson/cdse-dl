@@ -15,7 +15,7 @@ def handle_response(response: requests.Response) -> None:
         response (requests.Response): response
 
     Raises:
-        Exception: Invalid Request
+        CopernicusODataError: Invalid Request
     """
     try:
         response.raise_for_status()

@@ -37,7 +37,7 @@ def check_response(response: requests.Response) -> None:
         response (requests.Response): response
 
     Raises:
-        Exception: token response error
+        APIAuthException: token response error
     """
     try:
         response.raise_for_status()
@@ -159,7 +159,11 @@ class BearerAuth(requests.auth.AuthBase):
         self.token = token
 
     def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
-        """Adds auth header."""
+        """Adds auth header.
+
+        Returns:
+            PreparedRequest: prepared request with token
+        """
         r.headers["authorization"] = f"Bearer {self.token}"
         return r
 
@@ -239,7 +243,11 @@ class Credentials:
             self.token_info.update(new_token_info)
 
     def is_token_expired(self) -> bool:
-        """Check if the current access token has expired."""
+        """Check if the current access token has expired.
+
+        Returns:
+            bool: true if token is expired
+        """
         return is_token_expired(
             self.token_info["acquired_time"], self.token_info["expires_in"]
         )
@@ -261,7 +269,11 @@ class CDSEAuthSession(requests.Session):
         self.auth = self._create_auth()
 
     def _create_auth(self) -> BearerAuth:
-        """Create a new TokenAuth instance with the current access token."""
+        """Create a new TokenAuth instance with the current access token.
+
+        Returns:
+            BearerAuth: auth w/ current access token
+        """
         return BearerAuth(self._creds.token_info["access_token"])
 
     def refresh_token(self) -> None:
@@ -287,7 +299,11 @@ class CDSEAuthSession(requests.Session):
                 del headers["Authorization"]
 
     def request(self, *args: Any, **kwargs: Any) -> requests.Response:
-        """Auto-refreshing authenticated request."""
+        """Auto-refreshing authenticated request.
+
+        Returns:
+            Response: response
+        """
         if self._creds.is_token_expired():
             logger.debug("token is expired")
             self.refresh_token()
@@ -302,7 +318,14 @@ class CDSEAuthSession(requests.Session):
 
 
 def get_s3fs_session() -> s3fs.S3FileSystem:
-    """Get s3fs session."""
+    """Get s3fs session.
+
+    Raises:
+        Exception: environment variable does not exist or is empty
+
+    Returns:
+        S3FileSystem: s3fs session
+    """
     access_key = os.getenv("CDSE_S3_ACCESS_KEY", "")
     secret_key = os.getenv("CDSE_S3_SECRET_KEY", "")
     if not access_key or not secret_key:

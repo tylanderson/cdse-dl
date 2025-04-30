@@ -18,6 +18,10 @@ def parse_datetime_to_components(
     Args:
         value (DatetimeLike): DatetimeLike to convert
 
+    Raises:
+        Exception: too many or too few datetime components
+        Exception: double open-ended datetime components
+
     Returns:
         Optional[list[Optional[datetime]]]: datetime components
     """

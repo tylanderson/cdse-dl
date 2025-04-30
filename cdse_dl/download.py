@@ -44,6 +44,9 @@ def _check_hash(
 
     Returns:
         bool: True if file matches hash in product info
+
+    Raises:
+        ValueError: error with checksum
     """
     checksums_info = {i["Algorithm"]: i for i in product_info["Checksum"]}
     checksums_available = checksums_info.keys()
@@ -118,6 +121,9 @@ class Downloader:
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
             quiet (bool): disable progress bar. Defaults to False.
+
+        Raises:
+            Exception: checksums do not match
         """
         try:
             product_id = product["Id"]
@@ -186,6 +192,9 @@ class Downloader:
             product_id (Optional[str], optional): product id. Defaults to None.
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
             quiet (bool): disable progress bar. Defaults to False.
+
+        Raises:
+            ValueError: name ore product_id not provided
         """
         if name is None and product_id is None:
             raise ValueError("must provide one of `name` or `product_id`")

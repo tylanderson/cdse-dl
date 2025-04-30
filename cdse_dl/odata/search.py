@@ -54,10 +54,7 @@ class SearchBase(ABC):
             order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to None.
             expand (Optional[str], optional): how to expand entry. Defaults to None.
             filters (Optional[list[Filter]], optional): extra filters to apply. Defaults to None.
-            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
-
-        Returns:
-            dict[str, Any]: entries
+            select (Optional[list[str]], optional): limit the requested properties to a specific subset. Defaults to None.
         """
         self._parameters = {
             "filter": filter_string,
@@ -357,6 +354,9 @@ def build_area_filter(value: GeometryLike) -> Filter:
 
     Args:
         value (GeometryLike): geometry to filter
+
+    Raises:
+        ValueError: cannot parse value
 
     Returns:
         Filter: area filter

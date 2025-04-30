@@ -186,9 +186,6 @@ class ProductSearch:
 
         Keyword Arguments:
             **kwargs: keyword arguments to additionally format
-
-        Returns:
-            dict: formatted params
         """
         self.collection = collection
         self.params = format_params(
