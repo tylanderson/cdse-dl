@@ -1,7 +1,8 @@
 """General utils."""
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional, Union
 
 from dateutil.parser import parse as dt_parse
 
@@ -20,15 +21,15 @@ def parse_datetime_to_components(
     Returns:
         Optional[List[Optional[datetime]]]: datetime components
     """
-    components: Sequence[Union[str, datetime, None]]
+    components: Iterable[Union[str, datetime, None]]
     if isinstance(value, datetime):
         components = [make_datetime_utc(value), None]
     elif isinstance(value, str):
         components = list(value.split("/"))
         if len(components) == 1:
-            components.append(None)  # type: ignore
+            components.append(None)
     else:
-        components = value  # type: ignore
+        components = value
 
     datetime_components: List[Optional[datetime]] = []
     for component in components:
@@ -42,7 +43,7 @@ def parse_datetime_to_components(
     if len(datetime_components) != 2:
         raise Exception(
             "too many/few datetime components "
-            f"(expected=2, actual={len(components)}): {components}"
+            f"(expected=2, actual={len(list(components))}): {list(components)}"
         )
     elif all(c is None for c in datetime_components):
         raise Exception("cannot create a double open-ended interval")

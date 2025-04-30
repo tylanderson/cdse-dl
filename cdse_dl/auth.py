@@ -30,7 +30,7 @@ class APIAuthException(Exception):
     pass
 
 
-def check_response(response: requests.Response):
+def check_response(response: requests.Response) -> None:
     """Check token response.
 
     Args:
@@ -48,7 +48,7 @@ def check_response(response: requests.Response):
         ) from e
 
 
-def response_to_token_info(response: requests.Response) -> Dict:
+def response_to_token_info(response: requests.Response) -> Dict[str, Any]:
     """Get token info from response.
 
     Adds `acquired_time` to token info
@@ -59,12 +59,12 @@ def response_to_token_info(response: requests.Response) -> Dict:
     Returns:
         Dict: token info
     """
-    token_info = response.json()
+    token_info = dict(response.json())
     token_info["acquired_time"] = time.time()
     return token_info
 
 
-def get_token_info(username: str, password: str) -> Dict:
+def get_token_info(username: str, password: str) -> Dict[str, Any]:
     """Get token info from username password auth.
 
     Args:
@@ -87,7 +87,7 @@ def get_token_info(username: str, password: str) -> Dict:
     return response_to_token_info(response)
 
 
-def refresh_token_info(refresh_token: str) -> Dict:
+def refresh_token_info(refresh_token: str) -> Dict[str, Any]:
     """Refresh token info using refresh token.
 
     Args:
@@ -114,7 +114,7 @@ def refresh_token_info(refresh_token: str) -> Dict:
 
 def refresh_token_info_or_reauth(
     refresh_token: str, username: str, password: str
-) -> Dict:
+) -> Dict[str, Any]:
     """Refresh token info using refresh token, and if token is invalid or expired, use username password to re-auth.
 
     Args:
@@ -158,7 +158,7 @@ class BearerAuth(requests.auth.AuthBase):
         """Auth for bearer token."""
         self.token = token
 
-    def __call__(self, r):
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
         """Adds auth header."""
         r.headers["authorization"] = f"Bearer {self.token}"
         return r
@@ -227,7 +227,7 @@ class Credentials:
             raise Exception(f".netrc does not have credentials for {IDENTITY_HOST}")
         return cls(username, password)
 
-    def refresh_token(self):
+    def refresh_token(self) -> None:
         """Refresh the access token using the refresh token."""
         with self.token_lock:
             # )
@@ -238,7 +238,7 @@ class Credentials:
             )
             self.token_info.update(new_token_info)
 
-    def is_token_expired(self):
+    def is_token_expired(self) -> bool:
         """Check if the current access token has expired."""
         return is_token_expired(
             self.token_info["acquired_time"], self.token_info["expires_in"]
@@ -248,7 +248,9 @@ class Credentials:
 class CDSEAuthSession(requests.Session):
     """authorized cdse session."""
 
-    def __init__(self, credentials: Optional[Credentials] = None, *args, **kwargs):
+    def __init__(
+        self, credentials: Optional[Credentials] = None, *args: Any, **kwargs: Any
+    ):
         """Create an authorized session to cdse."""
         super().__init__(*args, **kwargs)
         if credentials is None:
@@ -262,12 +264,12 @@ class CDSEAuthSession(requests.Session):
         """Create a new TokenAuth instance with the current access token."""
         return BearerAuth(self._creds.token_info["access_token"])
 
-    def refresh_token(self):
+    def refresh_token(self) -> None:
         """Refresh the access token using the refresh token."""
         self._creds.refresh_token()
         self.auth = self._create_auth()
 
-    def rebuild_auth(self, prepared_request: Any, response: Any):
+    def rebuild_auth(self, prepared_request: Any, response: Any) -> None:
         """Keep headers upon redirect as long as we are on any of AUTH_DOMAINS."""
         headers = prepared_request.headers
         url = prepared_request.url
@@ -284,7 +286,7 @@ class CDSEAuthSession(requests.Session):
                 )
                 del headers["Authorization"]
 
-    def request(self, *args, **kwargs):
+    def request(self, *args: Any, **kwargs: Any) -> requests.Response:
         """Auto-refreshing authenticated request."""
         if self._creds.is_token_expired():
             logger.debug("token is expired")

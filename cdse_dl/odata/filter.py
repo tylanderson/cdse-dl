@@ -59,19 +59,23 @@ class Filter:
         return str(value)
 
     @classmethod
-    def build_filter(cls, pattern: str, field: str, value: Any, **kwargs) -> "Filter":
+    def build_filter(
+        cls, pattern: str, field: str, value: Any, is_contains: bool = False
+    ) -> "Filter":
         """Build a filter from a pattern, field, and value.
 
         Args:
             pattern (str): pattern to format filter string
             field (str): field name
             value (Any): filter value
-            **kwargs: optional kwargs to pass down to constructor
+            is_contains (bool, optional): is a contains-type filter. Defaults to False.
 
         Returns:
             Filter: built filter
         """
-        return cls(pattern.format(field=field, value=cls.format_value(value)), **kwargs)
+        return cls(
+            pattern.format(field=field, value=cls.format_value(value)), is_contains
+        )
 
     @classmethod
     def eq(cls, field: str, value: Any) -> "Filter":
@@ -241,11 +245,11 @@ class Filter:
             pattern = "not ({filter_string})"
         return Filter(pattern.format(filter_string=self.filter_string))
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Get as string."""
         return self.filter_string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Get as repr."""
         return f"Filter<{self.filter_string}>"
 
@@ -255,7 +259,11 @@ class AttributeFilter(Filter):
 
     @classmethod
     def build_filter(
-        cls, pattern: str, field: str, value: Any, **kwargs
+        cls,
+        pattern: str,
+        field: str,
+        value: Any,
+        is_contains: bool = False,
     ) -> "AttributeFilter":
         """Build an attribute filter from a pattern, field, and value.
 
@@ -263,7 +271,7 @@ class AttributeFilter(Filter):
             pattern (str): pattern to format filter string
             field (str): field name
             value (Any): filter value
-            **kwargs: optional kwargs to pass down to constructor
+            is_contains (bool, optional): is a contains-type filter. Defaults to False.
 
         Returns:
             AttributeFilter: built filter
@@ -284,4 +292,4 @@ class AttributeFilter(Filter):
         value = pattern.format(field=attr_field, value=cls.format_value(value))
         final = f"Attributes/OData.CSC.{value_type}/any({field} and {value})"
 
-        return cls(final, **kwargs)
+        return cls(final, is_contains)

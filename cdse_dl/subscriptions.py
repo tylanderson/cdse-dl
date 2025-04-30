@@ -1,6 +1,6 @@
 """CDSE subscriptions management tooling."""
 
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from cdse_dl.auth import CDSEAuthSession, Credentials
 from cdse_dl.odata.filter import Filter
@@ -23,8 +23,8 @@ class SubscriptionClient:
     def create_subscription(
         self,
         filter: Optional[Filter] = None,
-        notification_params: Dict = None,
-    ) -> Dict:
+        notification_params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Create subscription.
 
         Args:
@@ -50,9 +50,9 @@ class SubscriptionClient:
 
         r = self.session.post(SUBSCRIPTIONS_URL, json=params)
         handle_response(r)
-        return r.json()
+        return dict(r.json())
 
-    def delete_subscription(self, subscription_id: str):
+    def delete_subscription(self, subscription_id: str) -> None:
         """Delete subscription.
 
         Args:
@@ -61,7 +61,7 @@ class SubscriptionClient:
         r = self.session.delete(f"{SUBSCRIPTIONS_URL}({subscription_id})")
         handle_response(r)
 
-    def ack_subscription(self, subscription_id: str, ack_token: str) -> Dict:
+    def ack_subscription(self, subscription_id: str, ack_token: str) -> Dict[str, Any]:
         """Acknowledge subscription result, removing it from the subscription.
 
         By acknowledging a result below no at the top of the subscription, all results above will also be acknowledged.
@@ -77,9 +77,11 @@ class SubscriptionClient:
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Ack?$ackid={ack_token}"
         )
         handle_response(r)
-        return r.json()
+        return dict(r.json())
 
-    def read_subscription(self, subscription_id: str, limit: int = 1) -> List[Dict]:
+    def read_subscription(
+        self, subscription_id: str, limit: int = 1
+    ) -> List[Dict[str, Any]]:
         """Read subscription.
 
         Args:
@@ -93,14 +95,14 @@ class SubscriptionClient:
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Read?$top={limit}"
         )
         handle_response(r)
-        return r.json()
+        return list(r.json())
 
     def update_subscription(
         self,
         subscription_id: str,
         status: Optional[Literal["running", "paused", "cancelled"]] = None,
-        notification_params: Optional[Dict] = None,
-    ) -> Dict:
+        notification_params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Update subscription.
 
         Args:
@@ -119,9 +121,9 @@ class SubscriptionClient:
 
         r = self.session.patch(f"{SUBSCRIPTIONS_URL}({subscription_id})", json=params)
         handle_response(r)
-        return r.json()
+        return dict(r.json())
 
-    def subscription_info(self, subscription_id: str) -> Dict:
+    def subscription_info(self, subscription_id: str) -> Dict[str, Any]:
         """Get subscription info.
 
         Args:
@@ -132,9 +134,9 @@ class SubscriptionClient:
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}({subscription_id})")
         handle_response(r)
-        return r.json()
+        return dict(r.json())
 
-    def list_subscriptions(self) -> List[Dict]:
+    def list_subscriptions(self) -> List[Dict[str, Any]]:
         """List subscriptions.
 
         Returns:
@@ -142,4 +144,4 @@ class SubscriptionClient:
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}/Info")
         handle_response(r)
-        return r.json()
+        return list(r.json())

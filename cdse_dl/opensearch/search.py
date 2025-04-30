@@ -63,8 +63,8 @@ def format_params(
     resolution: Optional[str] = None,
     sensor_mode: Optional[str] = None,
     status: Optional[str] = None,
-    **kwargs,
-) -> Dict:
+    **kwargs: Dict[str, Any],
+) -> Dict[str, Any]:
     """Format params for OpenSearch.
 
     Args:
@@ -162,8 +162,8 @@ class ProductSearch:
         resolution: Optional[str] = None,
         sensor_mode: Optional[str] = None,
         status: Optional[str] = None,
-        **kwargs,
-    ):
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Search OpenSearch.
 
         Args:
@@ -211,17 +211,17 @@ class ProductSearch:
         )
 
     @staticmethod
-    def _get(url, params):
+    def _get(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
         try:
             response = requests.get(url, params=params)
             handle_response(response)
-            content = response.json()
+            content = dict(response.json())
         except Exception as e:
             raise e
         return content
 
     @staticmethod
-    def get_url_for_collection(collection: str) -> str:
+    def get_url_for_collection(collection: Optional[str]) -> str:
         """Get search url formatted for collection.
 
         Args:
@@ -230,6 +230,8 @@ class ProductSearch:
         Returns:
             str: search url for collection
         """
+        if collection:
+            return f"{SEARCH_BASE_URL}/search.json"
         return f"{SEARCH_BASE_URL}/collections/{collection}/search.json"
 
     def get(
@@ -238,7 +240,7 @@ class ProductSearch:
         sort_param: Optional[str] = None,
         sort_order: Optional[str] = None,
         limit: Optional[int] = 1000,
-    ) -> Generator[Dict, None, None]:
+    ) -> Generator[Dict[str, Any], None, None]:
         """Get search results.
 
         Args:
@@ -284,7 +286,7 @@ class ProductSearch:
                     more_results = False
                     break
 
-    def hits(self) -> Dict:
+    def hits(self) -> Dict[str, Any]:
         """Get product hits.
 
         Returns:
@@ -293,4 +295,4 @@ class ProductSearch:
         URL = f"{SEARCH_BASE_URL}/collections/{self.collection}/search.json"
         r = requests.get(URL, params=self.params)
         r.raise_for_status()
-        return r.json()
+        return dict(r.json())

@@ -4,7 +4,7 @@ import logging
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import requests
 import shapely.wkt
@@ -69,7 +69,7 @@ class SearchBase(ABC):
         }
 
     @staticmethod
-    def _get(url, params):
+    def _get(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
         try:
             logging.debug(f"GET with params: {params}")
             response = requests.get(url, params=params)
@@ -77,9 +77,9 @@ class SearchBase(ABC):
             content = response.json()
         except Exception as e:
             raise e
-        return content
+        return dict(content)
 
-    def _get_formatted_params(self, limit, count=False):
+    def _get_formatted_params(self, limit: int, count: bool = False) -> Dict[str, Any]:
         params = deepcopy(self._parameters)
         if limit and not params.get("top"):
             params["top"] = limit
@@ -87,7 +87,7 @@ class SearchBase(ABC):
         params = {f"${k}": v for k, v in params.items() if v is not None}
         return params
 
-    def get(self, limit: Optional[int] = 1000) -> List[Dict]:
+    def get(self, limit: int = 1000) -> List[Dict[str, Any]]:
         """Get products, up to a limit if given.
 
         Args:
@@ -118,13 +118,13 @@ class SearchBase(ABC):
 
         return results
 
-    def get_all(self) -> List[Dict]:
+    def get_all(self) -> List[Dict[str, Any]]:
         """Get all products.
 
         Returns:
             List[Dict]: products
         """
-        return self.get(limit=None)
+        return self.get()
 
     def hits(self) -> int:
         """Get total number of products matching search.
@@ -134,7 +134,7 @@ class SearchBase(ABC):
         """
         params = self._get_formatted_params(limit=1, count=True)
         content = self._get(self.base_url, params=params)
-        return content["@odata.count"]
+        return int(content["@odata.count"])
 
 
 class ProductSearch(SearchBase):

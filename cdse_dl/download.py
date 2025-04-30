@@ -5,7 +5,7 @@ import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, Optional, Protocol, Self
 
 from tqdm.auto import tqdm
 
@@ -24,8 +24,16 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
 
 
+class Hasher(Protocol):  # noqa: D101
+    @property
+    def name(self) -> str: ...  # noqa: D102
+    def update(self, data: bytes) -> Optional[Self]: ...  # noqa: D102
+    def digest(self) -> bytes: ...  # noqa: D102
+    def hexdigest(self) -> str: ...  # noqa: D102
+
+
 def _check_hash(
-    file_path: Any, product_info: Dict, block_size: int = 1024 * 1024
+    file_path: Any, product_info: Dict[str, Any], block_size: int = 1024 * 1024
 ) -> bool:
     """Compare a given MD5 checksum with one calculated from a file.
 
@@ -45,7 +53,7 @@ def _check_hash(
 
     if "BLAKE3" in checksums_info and BLAKE3_AVAILABLE:
         checksum = checksums_info["BLAKE3"]["Value"]
-        hasher = blake3.blake3()
+        hasher: Hasher = blake3.blake3()
     elif "MD5" in checksums_available:
         checksum = checksums_info["MD5"]["Value"]
         hasher = hashlib.md5()
@@ -70,7 +78,7 @@ def _check_hash(
                     break
                 hasher.update(block_data)
                 progress.update(len(block_data))
-        return hasher.hexdigest().lower() == checksum.lower()
+        return bool(hasher.hexdigest().lower() == checksum.lower())
 
 
 class Downloader:
@@ -94,8 +102,12 @@ class Downloader:
         )
 
     def download(
-        self, product: Dict, path: Any, check: bool = True, quiet: bool = False
-    ):
+        self,
+        product: Dict[str, Any],
+        path: Any,
+        check: bool = True,
+        quiet: bool = False,
+    ) -> None:
         """Download product info to specified path.
 
         If `check` is `True`, with attempt to check the file for completeness
@@ -131,8 +143,12 @@ class Downloader:
                     )
 
     def download_all(
-        self, products: Iterable[Dict], path: Any, check: bool = True, **kwargs
-    ):
+        self,
+        products: Iterable[Dict[str, Any]],
+        path: Any,
+        check: bool = True,
+        quiet: bool = False,
+    ) -> None:
         """Download product info to specified path.
 
         If `check` is `True`, with attempt to check the file for completeness
@@ -144,11 +160,11 @@ class Downloader:
             products (Iterable[Dict]): multiple product infos to download
             path (Any): path to download file to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
-            **kwargs: Arbitrary keyword arguments.
+            quiet (bool): disable progress bar. Defaults to False.
         """
         with self.dl_executor as pool:
             _ = [
-                pool.submit(self.download, product, path, check, **kwargs)
+                pool.submit(self.download, product, path, check, quiet)
                 for product in products
             ]
 
@@ -159,8 +175,8 @@ class Downloader:
         name: Optional[str] = None,
         product_id: Optional[str] = None,
         check: bool = True,
-        **kwargs,
-    ):
+        quiet: bool = False,
+    ) -> None:
         """Download from name or id.
 
         Args:
@@ -169,17 +185,22 @@ class Downloader:
             name (Optional[str], optional): product name. Defaults to None.
             product_id (Optional[str], optional): product id. Defaults to None.
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
-            **kwargs: Arbitrary keyword arguments.
+            quiet (bool): disable progress bar. Defaults to False.
         """
         if name is None and product_id is None:
             raise ValueError("must provide one of `name` or `product_id`")
         search = ProductSearch(collection=collection, name=name, product_id=product_id)
         product = search.get(1)[0]
-        self.download(product, path, check, **kwargs)
+        self.download(product, path, check, quiet)
 
     def download_from_id(
-        self, collection: str, product_id: str, path: str, check: bool = True, **kwargs
-    ):
+        self,
+        collection: str,
+        product_id: str,
+        path: str,
+        check: bool = True,
+        quiet: bool = False,
+    ) -> None:
         """Download from product id.
 
         Args:
@@ -187,15 +208,18 @@ class Downloader:
             product_id (str): product product id
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
-            **kwargs: Arbitrary keyword arguments.
+            quiet (bool): disable progress bar. Defaults to False.
         """
-        self._download_from_name_or_id(
-            path, collection, None, product_id, check, **kwargs
-        )
+        self._download_from_name_or_id(path, collection, None, product_id, check, quiet)
 
     def download_from_name(
-        self, collection: str, name: str, path: str, check: bool = True, **kwargs
-    ):
+        self,
+        collection: str,
+        name: str,
+        path: str,
+        check: bool = True,
+        quiet: bool = False,
+    ) -> None:
         """Download from product name.
 
         Args:
@@ -203,13 +227,13 @@ class Downloader:
             name (str): product name
             path (str): path to download to
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
-            **kwargs: Arbitrary keyword arguments.
+            quiet (bool): disable progress bar. Defaults to False.
         """
-        self._download_from_name_or_id(path, collection, name, None, check, **kwargs)
+        self._download_from_name_or_id(path, collection, name, None, check, quiet)
 
     def _download_url(
         self, url: str, path: Any, chunk_size: int = 2**13, quiet: bool = False
-    ):
+    ) -> None:
         """Download a CDSE url to path.
 
         Args:

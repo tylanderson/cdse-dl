@@ -1,7 +1,7 @@
 """OData Attributes."""
 
 from functools import lru_cache
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import requests
 
@@ -9,13 +9,13 @@ ATTRIBUTES_ENDPOINT = "https://catalogue.dataspace.copernicus.eu/odata/v1/Attrib
 
 
 @lru_cache(1)
-def get_attribute_info() -> Dict:
+def get_attribute_info() -> Dict[str, Any]:
     """Get attribute info from OData.
 
     Returns:
         Dict: attribute info
     """
-    return requests.get(ATTRIBUTES_ENDPOINT).json()
+    return dict(requests.get(ATTRIBUTES_ENDPOINT).json())
 
 
 @lru_cache()
@@ -31,7 +31,7 @@ def get_attribute_type(collection: str, attribute_name: str) -> Optional[str]:
     """
     for attr in get_attribute_info()[collection]:
         if attribute_name == attr["Name"]:
-            return attr["ValueType"]
+            return str(attr["ValueType"])
 
     return None
 
