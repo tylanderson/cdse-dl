@@ -3,6 +3,7 @@
 import hashlib
 import logging
 import re
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Iterable, Optional, Protocol, Self
@@ -140,7 +141,7 @@ class Downloader:
 
         if check:
             if not product["Checksum"]:
-                logger.warning(f"{product_id}: Product has no checksums available")
+                warnings.warn(f"{product_id}: Product has no checksums available")
             else:
                 valid = _check_hash(path, product)
                 if not valid:

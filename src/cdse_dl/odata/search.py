@@ -1,6 +1,7 @@
 """Search OData Endpoint."""
 
 import logging
+import warnings
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
@@ -23,6 +24,8 @@ DELETION_CAUSES = [
     "Corrupted product",
     "Obsolete product or Other",
 ]
+
+logger = logging.getLogger(__name__)
 
 
 class SearchBase(ABC):
@@ -68,7 +71,7 @@ class SearchBase(ABC):
     @staticmethod
     def _get(url: str, params: dict[str, Any]) -> dict[str, Any]:
         try:
-            logging.debug(f"GET with params: {params}")
+            logger.debug(f"GET with params: {params}")
             response = requests.get(url, params=params)
             handle_response(response)
             content = response.json()
@@ -296,13 +299,12 @@ def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[
     Returns:
         Optional[str]: formatted string or `None`
     """
-    if order_by:
+    if not order_by:
         if order:
-            return f"{order_by} {order}"
-        else:
-            return order_by
-    else:
+            warnings.warn("`order` provided without `order_by`; ignoring order...")
         return None
+
+    return f"{order_by} {order}" if order else order_by
 
 
 def _filter_from_datetime_components(
@@ -441,7 +443,7 @@ def build_filter_string(
     if extra_filters:
         filters += extra_filters
 
-    logging.debug(f"Using Filters: {filters}")
+    logger.debug(f"Using Filters: {filters}")
 
     if len(filters) == 0:
         return None

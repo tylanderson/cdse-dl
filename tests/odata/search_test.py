@@ -71,9 +71,6 @@ def test_invalid_search_params():
     ) as e:
         _ = ProductSearch(order_by="test").get(1)
 
-    with pytest.raises(CopernicusODataError, match="Invalid value: test") as e:
-        _ = ProductSearch(order="test").get(1)
-
     with pytest.raises(
         CopernicusODataError, match="Invalid field in select: test"
     ) as e:
