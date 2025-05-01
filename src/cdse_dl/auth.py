@@ -4,7 +4,7 @@ import logging
 import os
 import threading
 import time
-from typing import Any, Optional, Self
+from typing import Any, Self
 from urllib.parse import urlparse
 
 import requests
@@ -257,7 +257,7 @@ class CDSEAuthSession(requests.Session):
     """authorized cdse session."""
 
     def __init__(
-        self, credentials: Optional[Credentials] = None, *args: Any, **kwargs: Any
+        self, credentials: Credentials | None = None, *args: Any, **kwargs: Any
     ):
         """Create an authorized session to cdse."""
         super().__init__(*args, **kwargs)

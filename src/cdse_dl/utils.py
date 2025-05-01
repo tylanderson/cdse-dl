@@ -2,7 +2,6 @@
 
 from collections.abc import Iterable
 from datetime import datetime
-from typing import Optional, Union
 
 from dateutil.parser import parse as dt_parse
 
@@ -12,7 +11,7 @@ from cdse_dl.types import DatetimeLike
 
 def parse_datetime_to_components(
     value: DatetimeLike,
-) -> list[Optional[datetime]]:
+) -> list[datetime | None]:
     """Convert DatetimeLike to list of datetimes.
 
     Args:
@@ -23,9 +22,9 @@ def parse_datetime_to_components(
         Exception: double open-ended datetime components
 
     Returns:
-        Optional[list[Optional[datetime]]]: datetime components
+        list[datetime | None]: datetime components
     """
-    components: Iterable[Union[str, datetime, None]]
+    components: Iterable[str | datetime | None]
     if isinstance(value, datetime):
         components = [make_datetime_utc(value), None]
     elif isinstance(value, str):
@@ -35,7 +34,7 @@ def parse_datetime_to_components(
     else:
         components = value
 
-    datetime_components: list[Optional[datetime]] = []
+    datetime_components: list[datetime | None] = []
     for component in components:
         if component:
             if isinstance(component, str):

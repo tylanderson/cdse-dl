@@ -1,6 +1,6 @@
 """CDSE subscriptions management tooling."""
 
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from cdse_dl.auth import CDSEAuthSession, Credentials
 from cdse_dl.odata.filter import Filter
@@ -12,23 +12,23 @@ SUBSCRIPTIONS_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Subscrip
 class SubscriptionClient:
     """Client for managing CDSE subscriptions."""
 
-    def __init__(self, credentials: Optional[Credentials] = None) -> None:
+    def __init__(self, credentials: Credentials | None = None) -> None:
         """Client for managing CDSE subscriptions.
 
         Args:
-            credentials (Optional[Credentials], optional): CDSE credentials. Defaults to None.
+            credentials (Credentials | None, optional): CDSE credentials. Defaults to None.
         """
         self.session = CDSEAuthSession(credentials)
 
     def create_subscription(
         self,
-        filter: Optional[Filter] = None,
-        notification_params: Optional[dict[str, Any]] = None,
+        filter: Filter | None = None,
+        notification_params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create subscription.
 
         Args:
-            filter (Optional[Filter], optional): OData Filter used to filter products that go to the subscription. Defaults to None.
+            filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
             notification_params (dict, optional): notification params for push subscriptions. Defaults to None.
 
         Returns:
@@ -100,15 +100,15 @@ class SubscriptionClient:
     def update_subscription(
         self,
         subscription_id: str,
-        status: Optional[Literal["running", "paused", "cancelled"]] = None,
-        notification_params: Optional[dict[str, Any]] = None,
+        status: Literal["running", "paused", "cancelled"] | None = None,
+        notification_params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Update subscription.
 
         Args:
             subscription_id (str): subscription id
-            status (Optional[Literal["running", "paused", "cancelled"]], optional): status. Defaults to None.
-            notification_params (Optional[dict], optional): notification endpoint params for push subscriptions. Defaults to None.
+            status (Literal["running", "paused", "cancelled"] | None, optional): status. Defaults to None.
+            notification_params (dict | None, optional): notification endpoint params for push subscriptions. Defaults to None.
 
         Returns:
             dict: updated subscription info

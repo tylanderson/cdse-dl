@@ -5,7 +5,7 @@ import warnings
 from abc import ABC
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal
 
 import requests
 import shapely.wkt
@@ -39,25 +39,25 @@ class SearchBase(ABC):
 
     def __init__(
         self,
-        filter_string: Optional[str] = None,
-        skip: Optional[int] = None,
-        top: Optional[int] = None,
-        order_by: Optional[str] = None,
-        order: Optional[Literal["asc", "desc"]] = None,
-        expand: Optional[str] = None,
-        select: Optional[list[str]] = None,
+        filter_string: str | None = None,
+        skip: int | None = None,
+        top: int | None = None,
+        order_by: str | None = None,
+        order: Literal["asc", "desc"] | None = None,
+        expand: str | None = None,
+        select: list[str] | None = None,
     ):
         """Search OData endpoint.
 
         Args:
-            filter_string (Optional[str], optional): filter string to search. Defaults to None.
-            skip (Optional[int], optional): number of entries to skip. Defaults to None.
-            top (Optional[int], optional): number of entries to return. Defaults to None.
-            order_by (Optional[str], optional): order entry by property. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order of entries. Defaults to None.
-            expand (Optional[str], optional): how to expand entry. Defaults to None.
-            filters (Optional[list[Filter]], optional): extra filters to apply. Defaults to None.
-            select (Optional[list[str]], optional): limit the requested properties to a specific subset. Defaults to None.
+            filter_string (str | None, optional): filter string to search. Defaults to None.
+            skip (int | None], optional): number of entries to skip. Defaults to None.
+            top (int | None], optional): number of entries to return. Defaults to None.
+            order_by (str | None, optional): order entry by property. Defaults to None.
+            order (Literal["asc", "desc"] | None, optional): order of entries. Defaults to None.
+            expand (str | None, optional): how to expand entry. Defaults to None.
+            filters (list[Filter] | None, optional): extra filters to apply. Defaults to None.
+            select (list[str] | None, optional): limit the requested properties to a specific subset. Defaults to None.
         """
         self._parameters = {
             "filter": filter_string,
@@ -91,7 +91,7 @@ class SearchBase(ABC):
         """Get products, up to a limit if given.
 
         Args:
-            limit (Optional[int], optional): optional limit to return. Defaults to 1000.
+            limit (int | None], optional): optional limit to return. Defaults to 1000.
 
         Returns:
             list[dict]: products
@@ -168,36 +168,36 @@ class ProductSearch(SearchBase):
 
     def __init__(
         self,
-        collection: Optional[str] = None,
-        name: Optional[str] = None,
-        product_id: Optional[str] = None,
-        date: Optional[DatetimeLike] = None,
-        publication_date: Optional[DatetimeLike] = None,
-        area: Optional[GeometryLike] = None,
-        skip: Optional[int] = None,
-        top: Optional[int] = None,
-        order_by: Optional[str] = None,
-        order: Optional[Literal["asc", "desc"]] = None,
-        expand: Optional[str] = None,
-        select: Optional[list[str]] = None,
-        filters: Optional[list[Filter]] = None,
+        collection: str | None = None,
+        name: str | None = None,
+        product_id: str | None = None,
+        date: DatetimeLike | None = None,
+        publication_date: DatetimeLike | None = None,
+        area: GeometryLike | None = None,
+        skip: int | None = None,
+        top: int | None = None,
+        order_by: str | None = None,
+        order: Literal["asc", "desc"] | None = None,
+        expand: str | None = None,
+        select: list[str] | None = None,
+        filters: list[Filter] | None = None,
     ):
         """Search OData endpoint for products.
 
         Args:
-            collection (Optional[str], optional): collection name to search. Defaults to None.
-            name (Optional[str], optional): product name to search. Defaults to None.
-            product_id (Optional[str], optional): product id to search. Defaults to None.
-            date (Optional[DatetimeLike], optional): sensing datetime / range to search. Defaults to None.
-            publication_date (Optional[DatetimeLike], optional): publication date / range to search. Defaults to None.
-            area (Optional[GeometryLike], optional): area to search. Defaults to None.
-            skip (Optional[int, optional): products to skip. Defaults to None.
-            top (Optional[int, optional): products to return per query. Defaults to None.
-            order_by (Optional[str], optional): order by attribute. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
-            expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
-            filters (Optional[list[Filter]], optional): extra filters to use. Defaults to None.
+            collection (str | None, optional): collection name to search. Defaults to None.
+            name (str | None, optional): product name to search. Defaults to None.
+            product_id (str | None, optional): product id to search. Defaults to None.
+            date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
+            publication_date (DatetimeLike | None, optional): publication date / range to search. Defaults to None.
+            area (GeometryLike | None, optional): area to search. Defaults to None.
+            skip (int | None, optional): products to skip. Defaults to None.
+            top (int | None, optional): products to return per query. Defaults to None.
+            order_by (str | None, optional): order by attribute. Defaults to None.
+            order (Literal["asc", "desc"] | None, optional): order direction. Defaults to None.
+            expand (str | None, optional): expand products with more detail. Defaults to None.
+            select (list[str] | None), optional): fields to select in return response. Defaults to None.
+            filters (list[Filter] | None, optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
             collection=collection,
@@ -238,40 +238,40 @@ class DeletedProductSearch(SearchBase):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        product_id: Optional[str] = None,
-        collection: Optional[str] = None,
-        date: Optional[DatetimeLike] = None,
-        deletion_date: Optional[DatetimeLike] = None,
-        origin_date: Optional[DatetimeLike] = None,
-        deletion_cause: Optional[str] = None,
-        area: Optional[GeometryLike] = None,
-        skip: Optional[int] = None,
-        top: Optional[int] = None,
-        order_by: Optional[str] = None,
-        order: Optional[Literal["asc", "desc"]] = None,
-        expand: Optional[str] = None,
-        select: Optional[list[str]] = None,
-        filters: Optional[list[Filter]] = None,
+        name: str | None = None,
+        product_id: str | None = None,
+        collection: str | None = None,
+        date: DatetimeLike | None = None,
+        deletion_date: DatetimeLike | None = None,
+        origin_date: DatetimeLike | None = None,
+        deletion_cause: str | None = None,
+        area: GeometryLike | None = None,
+        skip: int | None = None,
+        top: int | None = None,
+        order_by: str | None = None,
+        order: Literal["asc", "desc"] | None = None,
+        expand: str | None = None,
+        select: list[str] | None = None,
+        filters: list[Filter] | None = None,
     ):
         """Search OData endpoint for deleted products.
 
         Args:
-            name (Optional[str], optional): product name to search. Defaults to None.
-            product_id (Optional[str], optional): product id to search. Defaults to None.
-            collection (Optional[str], optional): collection name to search. Defaults to None.
-            date (Optional[DatetimeLike], optional): sensing datetime / range to search. Defaults to None.
-            deletion_date (Optional[DatetimeLike], optional): deletion datetime / range to search. Defaults to None.
-            origin_date (Optional[DatetimeLike], optional): origin datetime/ range to search. Defaults to None.
-            deletion_cause (Optional[str], optional): deletion cause. Defaults to None.
-            area (Optional[GeometryLike], optional): area to search. Defaults to None.
-            skip (Optional[int], optional): products to skip. Defaults to None.
-            top (Optional[int], optional): products to return per query. Defaults to None.
-            order_by (Optional[str], optional): order by attribute. Defaults to None.
-            order (Optional[Literal["asc", "desc"]], optional): order direction. Defaults to None.
-            expand (Optional[str], optional): expand products with more detail. Defaults to None.
-            select (Optional[list[str]]), optional): fields to select in return response. Defaults to None.
-            filters (Optional[list[Filter]], optional): extra filters to use. Defaults to None.
+            name (str | None, optional): product name to search. Defaults to None.
+            product_id (str | None, optional): product id to search. Defaults to None.
+            collection (str | None, optional): collection name to search. Defaults to None.
+            date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
+            deletion_date (DatetimeLike | None, optional): deletion datetime / range to search. Defaults to None.
+            origin_date (DatetimeLike | None, optional): origin datetime/ range to search. Defaults to None.
+            deletion_cause (str | None, optional): deletion cause. Defaults to None.
+            area (GeometryLike | None, optional): area to search. Defaults to None.
+            skip (int | None], optional): products to skip. Defaults to None.
+            top (int | None], optional): products to return per query. Defaults to None.
+            order_by (str | None, optional): order by attribute. Defaults to None.
+            order (Literal["asc", "desc"] | None, optional): order direction. Defaults to None.
+            expand (str | None, optional): expand products with more detail. Defaults to None.
+            select (list[str] | None), optional): fields to select in return response. Defaults to None.
+            filters (list[Filter] | None, optional): extra filters to use. Defaults to None.
         """
         filter = build_filter_string(
             collection=collection,
@@ -287,17 +287,17 @@ class DeletedProductSearch(SearchBase):
         super().__init__(filter, skip, top, order_by, order, expand, select)
 
 
-def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[str]:
+def _format_order_by(order_by: str | None, order: str | None) -> str | None:
     """Format order by with order direction.
 
     If order_by is not given, None is returned
 
     Args:
-        order_by (Optional[str], optional): order by field
-        order (Optional[str], optional): order direction
+        order_by (str | None, optional): order by field
+        order (str | None, optional): order direction
 
     Returns:
-        Optional[str]: formatted string or `None`
+        str | None: formatted string or `None`
     """
     if not order_by:
         if order:
@@ -308,16 +308,16 @@ def _format_order_by(order_by: Optional[str], order: Optional[str]) -> Optional[
 
 
 def _filter_from_datetime_components(
-    components: list[Optional[datetime]], field: str
+    components: list[datetime | None], field: str
 ) -> Filter:
     """Build Filter from datetime components.
 
     Args:
-        components (Optional[list[datetime]]): datetime component
+        components (list[datetime] | None): datetime component
         field (str): field to build filter on
 
     Returns:
-        Optional[Filter]: datetime filter
+        Filter: datetime filter
     """
     filters = []
 
@@ -345,7 +345,7 @@ def build_datetime_filter(value: DatetimeLike, field: str) -> Filter:
         field (str): field to construct filter on
 
     Returns:
-        Optional[Filter]: datetime filter
+        Filter: datetime filter
     """
     components = parse_datetime_to_components(value)
     return _filter_from_datetime_components(components, field)
@@ -390,35 +390,35 @@ def build_area_filter(value: GeometryLike) -> Filter:
 
 def build_filter_string(
     *,
-    collection: Optional[str] = None,
-    name: Optional[str] = None,
-    product_id: Optional[str] = None,
-    date: Optional[DatetimeLike] = None,
-    publication_date: Optional[DatetimeLike] = None,
-    deletion_date: Optional[DatetimeLike] = None,
-    origin_date: Optional[DatetimeLike] = None,
-    deletion_cause: Optional[str] = None,
-    area: Optional[GeometryLike] = None,
-    extra_filters: Optional[list[Filter]] = None,
-) -> Optional[str]:
+    collection: str | None = None,
+    name: str | None = None,
+    product_id: str | None = None,
+    date: DatetimeLike | None = None,
+    publication_date: DatetimeLike | None = None,
+    deletion_date: DatetimeLike | None = None,
+    origin_date: DatetimeLike | None = None,
+    deletion_cause: str | None = None,
+    area: GeometryLike | None = None,
+    extra_filters: list[Filter] | None = None,
+) -> str | None:
     """Build filter string.
 
     Args:
-        collection (Optional[str], optional): collection name. Defaults to None.
-        name (Optional[str], optional): product name. Defaults to None.
-        product_id (Optional[str], optional): product id. Defaults to None.
-        date (Optional[DatetimeLike], optional): sensing datetime filter. Defaults to None.
-        publication_date (Optional[DatetimeLike], optional): publication datetime filter. Defaults to None.
-        deletion_date (Optional[DatetimeLike], optional): deletion datetime filter. Defaults to None.
-        origin_date (Optional[DatetimeLike], optional): origin datetime filter. Defaults to None.
-        deletion_cause (Optional[str], optional): deletion cause. Defaults to None.
-        area (Optional[GeometryLike], optional): area value. Defaults to None.
-        extra_filters (Optional[list[Filter]], optional): extra custom filters. Defaults to None.
+        collection (str | None, optional): collection name. Defaults to None.
+        name (str | None, optional): product name. Defaults to None.
+        product_id (str | None, optional): product id. Defaults to None.
+        date (DatetimeLike | None, optional): sensing datetime filter. Defaults to None.
+        publication_date (DatetimeLike | None, optional): publication datetime filter. Defaults to None.
+        deletion_date (DatetimeLike | None, optional): deletion datetime filter. Defaults to None.
+        origin_date (DatetimeLike | None, optional): origin datetime filter. Defaults to None.
+        deletion_cause (str | None, optional): deletion cause. Defaults to None.
+        area (GeometryLike | None, optional): area value. Defaults to None.
+        extra_filters (list[Filter] | None, optional): extra custom filters. Defaults to None.
 
     Returns:
         str: filter string
     """
-    filters: list[Union[Filter, AttributeFilter]] = []
+    filters: list[Filter | AttributeFilter] = []
     if collection:
         filters.append(Filter.eq("Collection/Name", collection))
     if name:

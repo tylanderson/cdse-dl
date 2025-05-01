@@ -1,7 +1,7 @@
 """OData Attributes."""
 
 from functools import lru_cache
-from typing import Literal, Tuple, TypedDict
+from typing import Literal, TypedDict
 
 import requests
 
@@ -31,7 +31,7 @@ def get_attribute_info() -> CollectionAttributes:
     return product_attributes
 
 
-@lru_cache()
+@lru_cache
 def get_attribute_type(collection: str, attribute_name: str) -> str | None:
     """Get attribute type from OData from collection and attribute name.
 
@@ -49,7 +49,7 @@ def get_attribute_type(collection: str, attribute_name: str) -> str | None:
     return None
 
 
-def get_collections() -> Tuple[str, ...]:
+def get_collections() -> tuple[str, ...]:
     """Get all known collections.
 
     Returns:
@@ -58,7 +58,7 @@ def get_collections() -> Tuple[str, ...]:
     return tuple(get_attribute_info().keys())
 
 
-def get_collection_attributes(collection: str) -> Tuple[str, ...]:
+def get_collection_attributes(collection: str) -> tuple[str, ...]:
     """Get all know attributes that can be queried for a collection.
 
     Args:

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Iterable, Self
+from typing import Any, Self
 
 from dateutil import tz
 
@@ -267,7 +268,7 @@ class AttributeFilter(Filter):
         field: str,
         value: Any,
         is_contains: bool = False,
-    ) -> "AttributeFilter":
+    ) -> AttributeFilter:
         """Build an attribute filter from a pattern, field, and value.
 
         Args:

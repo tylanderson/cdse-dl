@@ -4,9 +4,10 @@ import hashlib
 import logging
 import re
 import warnings
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Iterable, Optional, Protocol, Self
+from typing import Any, Protocol, Self
 
 from tqdm.auto import tqdm
 
@@ -28,7 +29,7 @@ BASE_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
 class Hasher(Protocol):  # noqa: D101
     @property
     def name(self) -> str: ...  # noqa: D102
-    def update(self, data: bytes) -> Optional[Self]: ...  # noqa: D102
+    def update(self, data: bytes) -> Self | None: ...  # noqa: D102
     def digest(self) -> bytes: ...  # noqa: D102
     def hexdigest(self) -> str: ...  # noqa: D102
 
@@ -90,14 +91,14 @@ class Downloader:
 
     def __init__(
         self,
-        credentials: Optional[Credentials] = None,
-        max_num_workers: Optional[int] = 4,
+        credentials: Credentials | None = None,
+        max_num_workers: int | None = 4,
     ) -> None:
         """Downloader for CDSE.
 
         Args:
-            credentials (Optional[Credentials], optional): Credentials for authorizing session. Defaults to None.
-            max_num_workers (Optional[int], optional): Max number of workers to download with. Defaults to 4.
+            credentials (Credentials | None, optional): Credentials for authorizing session. Defaults to None.
+            max_num_workers (int | None, optional): Max number of workers to download with. Defaults to 4.
         """
         self.session = CDSEAuthSession(credentials)
         self.dl_executor = ThreadPoolExecutor(
@@ -178,9 +179,9 @@ class Downloader:
     def _download_from_name_or_id(
         self,
         path: str,
-        collection: Optional[str] = None,
-        name: Optional[str] = None,
-        product_id: Optional[str] = None,
+        collection: str | None = None,
+        name: str | None = None,
+        product_id: str | None = None,
         check: bool = True,
         quiet: bool = False,
     ) -> None:
@@ -188,9 +189,9 @@ class Downloader:
 
         Args:
             path (str): path to download to
-            collection (Optional[str], optional): collection to download from. Defaults to None.
-            name (Optional[str], optional): product name. Defaults to None.
-            product_id (Optional[str], optional): product id. Defaults to None.
+            collection (str | None, optional): collection to download from. Defaults to None.
+            name (str | None, optional): product name. Defaults to None.
+            product_id (str | None, optional): product id. Defaults to None.
             check (bool, optional): check the downloaded file against checksums. Defaults to True.
             quiet (bool): disable progress bar. Defaults to False.
 
@@ -256,7 +257,7 @@ class Downloader:
         if path.exists():
             mode = "ab"
             downloaded_bytes = path.stat().st_size
-            headers = {"Range": "bytes={}-".format(downloaded_bytes)}
+            headers = {"Range": f"bytes={downloaded_bytes}-"}
 
         else:
             mode = "wb"

@@ -1,6 +1,7 @@
 """Search OpenSearch Endpoint."""
 
-from typing import Any, Generator, Optional, Tuple
+from collections.abc import Generator
+from typing import Any
 
 import requests
 
@@ -48,41 +49,41 @@ def handle_response(response: requests.Response) -> None:
 
 
 def format_params(
-    name: Optional[str] = None,
-    product_id: Optional[str] = None,
-    date: Optional[DatetimeLike] = None,
-    publication_date: Optional[DatetimeLike] = None,
-    geometry: Optional[GeometryLike] = None,
-    point: Optional[Tuple[float, float]] = None,
-    radius: Optional[float] = None,
-    bbox: Optional[Tuple[float, float, float, float]] = None,
-    cloud_cover: Optional[Tuple[int, int]] = None,
-    instrument: Optional[str] = None,
-    product_type: Optional[str] = None,
-    orbit_direction: Optional[str] = None,
-    resolution: Optional[str] = None,
-    sensor_mode: Optional[str] = None,
-    status: Optional[str] = None,
+    name: str | None = None,
+    product_id: str | None = None,
+    date: DatetimeLike | None = None,
+    publication_date: DatetimeLike | None = None,
+    geometry: GeometryLike | None = None,
+    point: tuple[float, float] | None = None,
+    radius: float | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    cloud_cover: tuple[int, int] | None = None,
+    instrument: str | None = None,
+    product_type: str | None = None,
+    orbit_direction: str | None = None,
+    resolution: str | None = None,
+    sensor_mode: str | None = None,
+    status: str | None = None,
     **kwargs: dict[str, Any],
 ) -> dict[str, Any]:
     """Format params for OpenSearch.
 
     Args:
-        name (Optional[str], optional): collection name to search. Defaults to None.
-        product_id (Optional[str], optional): product id to search. Defaults to None.
-        date (Optional[DatetimeLike], optional): sensing datetime / range to search. Defaults to None.
-        publication_date (Optional[DatetimeLike], optional): publication date / range to search. Defaults to None.
-        geometry (Optional[GeometryLike], optional): area to search. Defaults to None.
-        point (Optional[Tuple[float, float]], optional): point to search. Defaults to None.
-        radius (Optional[float], optional): radius to buffer point by. Defaults to None.
-        bbox (Optional[Tuple[float, float, float, float]], optional): bbox to search. Defaults to None.
-        cloud_cover (Optional[Tuple[int, int]], optional): cloud cover range to filter on. Defaults to None.
-        instrument (Optional[str], optional): instrument to filter on. Defaults to None.
-        product_type (Optional[str], optional): product type to filter on. Defaults to None.
-        orbit_direction (Optional[str], optional): orbit direction to filter on. Defaults to None.
-        resolution (Optional[str], optional): resolution to filter on. Defaults to None.
-        sensor_mode (Optional[str], optional): sensor mode to filter on. Defaults to None.
-        status (Optional[str], optional): status to filter on. Defaults to None.
+        name (str | None, optional): collection name to search. Defaults to None.
+        product_id (str | None, optional): product id to search. Defaults to None.
+        date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
+        publication_date (DatetimeLike | None, optional): publication date / range to search. Defaults to None.
+        geometry (GeometryLike | None, optional): area to search. Defaults to None.
+        point (Tuple[float, float] | None, optional): point to search. Defaults to None.
+        radius (float | None, optional): radius to buffer point by. Defaults to None.
+        bbox (Tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
+        cloud_cover (Tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
+        instrument (str | None, optional): instrument to filter on. Defaults to None.
+        product_type (str | None, optional): product type to filter on. Defaults to None.
+        orbit_direction (str | None, optional): orbit direction to filter on. Defaults to None.
+        resolution (str | None, optional): resolution to filter on. Defaults to None.
+        sensor_mode (str | None, optional): sensor mode to filter on. Defaults to None.
+        status (str | None, optional): status to filter on. Defaults to None.
 
     Keyword Arguments:
         **kwargs: keyword arguments to additionally format
@@ -146,43 +147,43 @@ class ProductSearch:
 
     def __init__(
         self,
-        collection: Optional[str] = None,
-        name: Optional[str] = None,
-        product_id: Optional[str] = None,
-        date: Optional[DatetimeLike] = None,
-        publication_date: Optional[DatetimeLike] = None,
-        geometry: Optional[GeometryLike] = None,
-        point: Optional[Tuple[float, float]] = None,
-        radius: Optional[float] = None,
-        bbox: Optional[Tuple[float, float, float, float]] = None,
-        cloud_cover: Optional[Tuple[int, int]] = None,
-        instrument: Optional[str] = None,
-        product_type: Optional[str] = None,
-        orbit_direction: Optional[str] = None,
-        resolution: Optional[str] = None,
-        sensor_mode: Optional[str] = None,
-        status: Optional[str] = None,
+        collection: str | None = None,
+        name: str | None = None,
+        product_id: str | None = None,
+        date: DatetimeLike | None = None,
+        publication_date: DatetimeLike | None = None,
+        geometry: GeometryLike | None = None,
+        point: tuple[float, float] | None = None,
+        radius: float | None = None,
+        bbox: tuple[float, float, float, float] | None = None,
+        cloud_cover: tuple[int, int] | None = None,
+        instrument: str | None = None,
+        product_type: str | None = None,
+        orbit_direction: str | None = None,
+        resolution: str | None = None,
+        sensor_mode: str | None = None,
+        status: str | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
         """Search OpenSearch.
 
         Args:
-            collection (Optional[str], optional): collection name to search. Defaults to None.
-            name (Optional[str], optional): collection name to search. Defaults to None.
-            product_id (Optional[str], optional): product id to search. Defaults to None.
-            date (Optional[DatetimeLike], optional): sensing datetime / range to search. Defaults to None.
-            publication_date (Optional[DatetimeLike], optional): publication date / range to search. Defaults to None.
-            geometry (Optional[GeometryLike], optional): area to search. Defaults to None.
-            point (Optional[Tuple[float, float]], optional): point to search. Defaults to None.
-            radius (Optional[float], optional): radius to buffer point by. Defaults to None.
-            bbox (Optional[Tuple[float, float, float, float]], optional): bbox to search. Defaults to None.
-            cloud_cover (Optional[Tuple[int, int]], optional): cloud cover range to filter on. Defaults to None.
-            instrument (Optional[str], optional): instrument to filter on. Defaults to None.
-            product_type (Optional[str], optional): product type to filter on. Defaults to None.
-            orbit_direction (Optional[str], optional): orbit direction to filter on. Defaults to None.
-            resolution (Optional[str], optional): resolution to filter on. Defaults to None.
-            sensor_mode (Optional[str], optional): sensor mode to filter on. Defaults to None.
-            status (Optional[str], optional): status to filter on. Defaults to None.
+            collection (str | None, optional): collection name to search. Defaults to None.
+            name (str | None, optional): collection name to search. Defaults to None.
+            product_id (str | None, optional): product id to search. Defaults to None.
+            date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
+            publication_date (DatetimeLike | None, optional): publication date / range to search. Defaults to None.
+            geometry (GeometryLike | None, optional): area to search. Defaults to None.
+            point (Tuple[float, float] | None, optional): point to search. Defaults to None.
+            radius (float | None, optional): radius to buffer point by. Defaults to None.
+            bbox (Tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
+            cloud_cover (Tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
+            instrument (str | None, optional): instrument to filter on. Defaults to None.
+            product_type (str | None, optional): product type to filter on. Defaults to None.
+            orbit_direction (str | None, optional): orbit direction to filter on. Defaults to None.
+            resolution (str | None, optional): resolution to filter on. Defaults to None.
+            sensor_mode (str | None, optional): sensor mode to filter on. Defaults to None.
+            status (str | None, optional): status to filter on. Defaults to None.
 
         Keyword Arguments:
             **kwargs: keyword arguments to additionally format
@@ -218,7 +219,7 @@ class ProductSearch:
         return content
 
     @staticmethod
-    def get_url_for_collection(collection: Optional[str]) -> str:
+    def get_url_for_collection(collection: str | None) -> str:
         """Get search url formatted for collection.
 
         Args:
@@ -234,17 +235,17 @@ class ProductSearch:
     def get(
         self,
         page_size: int = 1000,
-        sort_param: Optional[str] = None,
-        sort_order: Optional[str] = None,
-        limit: Optional[int] = 1000,
+        sort_param: str | None = None,
+        sort_order: str | None = None,
+        limit: int | None = 1000,
     ) -> Generator[dict[str, Any], None, None]:
         """Get search results.
 
         Args:
             page_size (int, optional): page size to search with. Defaults to 1000.
-            sort_param (Optional[str], optional): attribute to sort on. Defaults to None.
-            sort_order (Optional[str], optional): order to sort products on. Defaults to None.
-            limit (Optional[int], optional): result limit. Defaults to 1000.
+            sort_param (str | None, optional): attribute to sort on. Defaults to None.
+            sort_order (str | None, optional): order to sort products on. Defaults to None.
+            limit (int |None, optional): result limit. Defaults to 1000.
 
         Yields:
             Generator[dict, None, None]: product results
