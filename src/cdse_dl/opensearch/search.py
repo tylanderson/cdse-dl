@@ -74,10 +74,10 @@ def format_params(
         date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
         publication_date (DatetimeLike | None, optional): publication date / range to search. Defaults to None.
         geometry (GeometryLike | None, optional): area to search. Defaults to None.
-        point (Tuple[float, float] | None, optional): point to search. Defaults to None.
+        point (tuple[float, float] | None, optional): point to search. Defaults to None.
         radius (float | None, optional): radius to buffer point by. Defaults to None.
-        bbox (Tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
-        cloud_cover (Tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
+        bbox (tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
+        cloud_cover (tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
         instrument (str | None, optional): instrument to filter on. Defaults to None.
         product_type (str | None, optional): product type to filter on. Defaults to None.
         orbit_direction (str | None, optional): orbit direction to filter on. Defaults to None.
@@ -174,10 +174,10 @@ class ProductSearch:
             date (DatetimeLike | None, optional): sensing datetime / range to search. Defaults to None.
             publication_date (DatetimeLike | None, optional): publication date / range to search. Defaults to None.
             geometry (GeometryLike | None, optional): area to search. Defaults to None.
-            point (Tuple[float, float] | None, optional): point to search. Defaults to None.
+            point (tuple[float, float] | None, optional): point to search. Defaults to None.
             radius (float | None, optional): radius to buffer point by. Defaults to None.
-            bbox (Tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
-            cloud_cover (Tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
+            bbox (tuple[float, float, float, float] | None, optional): bbox to search. Defaults to None.
+            cloud_cover (tuple[int, int] | None, optional): cloud cover range to filter on. Defaults to None.
             instrument (str | None, optional): instrument to filter on. Defaults to None.
             product_type (str | None, optional): product type to filter on. Defaults to None.
             orbit_direction (str | None, optional): orbit direction to filter on. Defaults to None.

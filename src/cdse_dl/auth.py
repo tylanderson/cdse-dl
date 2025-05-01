@@ -4,7 +4,7 @@ import logging
 import os
 import threading
 import time
-from typing import Any, Self
+from typing import Any, Self, TypedDict
 from urllib.parse import urlparse
 
 import requests
@@ -22,6 +22,22 @@ AUTH_DOMAINS = [
     "download.dataspace.copernicus.eu",
     "zipper.dataspace.copernicus.eu",
 ]
+
+
+TokenInfo = TypedDict(
+    "TokenInfo",
+    {
+        "access_token": str,
+        "expires_in": int,
+        "refresh_expires_in": int,
+        "refresh_token": str,
+        "token_type": str,
+        "not-before-policy": int,
+        "session_state": str,
+        "scope": str,
+        "acquired_time": float,
+    },
+)
 
 
 class APIAuthException(Exception):
@@ -48,7 +64,7 @@ def check_response(response: requests.Response) -> None:
         ) from e
 
 
-def response_to_token_info(response: requests.Response) -> dict[str, Any]:
+def response_to_token_info(response: requests.Response) -> TokenInfo:
     """Get token info from response.
 
     Adds `acquired_time` to token info
@@ -59,12 +75,12 @@ def response_to_token_info(response: requests.Response) -> dict[str, Any]:
     Returns:
         dict: token info
     """
-    token_info = dict(response.json())
+    token_info: TokenInfo = response.json()
     token_info["acquired_time"] = time.time()
     return token_info
 
 
-def get_token_info(username: str, password: str) -> dict[str, Any]:
+def get_token_info(username: str, password: str) -> TokenInfo:
     """Get token info from username password auth.
 
     Args:
@@ -87,7 +103,7 @@ def get_token_info(username: str, password: str) -> dict[str, Any]:
     return response_to_token_info(response)
 
 
-def refresh_token_info(refresh_token: str) -> dict[str, Any]:
+def refresh_token_info(refresh_token: str) -> TokenInfo:
     """Refresh token info using refresh token.
 
     Args:
@@ -114,7 +130,7 @@ def refresh_token_info(refresh_token: str) -> dict[str, Any]:
 
 def refresh_token_info_or_reauth(
     refresh_token: str, username: str, password: str
-) -> dict[str, Any]:
+) -> TokenInfo:
     """Refresh token info using refresh token, and if token is invalid or expired, use username password to re-auth.
 
     Args:
@@ -234,7 +250,6 @@ class Credentials:
     def refresh_token(self) -> None:
         """Refresh the access token using the refresh token."""
         with self.token_lock:
-            # )
             new_token_info = refresh_token_info_or_reauth(
                 refresh_token=self.token_info["refresh_token"],
                 username=self.username,

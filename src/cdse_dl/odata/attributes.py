@@ -53,7 +53,7 @@ def get_collections() -> tuple[str, ...]:
     """Get all known collections.
 
     Returns:
-        Tuple[str, ...]: known collections
+        tuple[str, ...]: known collections
     """
     return tuple(get_attribute_info().keys())
 
@@ -68,7 +68,7 @@ def get_collection_attributes(collection: str) -> tuple[str, ...]:
         ValueError: invalid collection
 
     Returns:
-        Tuple[str, ...]: known attributes
+        tuple[str, ...]: known attributes
 
     """
     collections = get_collections()
