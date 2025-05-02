@@ -1,23 +1,13 @@
 """OData Attributes."""
 
 from functools import lru_cache
-from typing import Literal, TypedDict
 
 import requests
 
 from cdse_dl.odata.constants import ODATA_BASE_URL
+from cdse_dl.odata.types import CollectionAttributes
 
-ATTRIBUTES_ENDPOINT = f"{ODATA_BASE_URL}/Attributes"
-
-
-class Attribute(TypedDict):
-    """attribute of a product."""
-
-    Name: str
-    ValueType: Literal["String", "Integer", "Double", "DateTimeOffset", "Boolean"]
-
-
-CollectionAttributes = dict[str, list[Attribute]]
+ATTRIBUTES_ENDPOINT = ODATA_BASE_URL + "/Attributes"
 
 
 @lru_cache(maxsize=1)

@@ -12,6 +12,7 @@ import shapely.wkt
 from shapely.geometry import MultiPolygon, shape
 from shapely.geometry.base import BaseGeometry
 
+from cdse_dl.odata.constants import ODATA_BASE_URL
 from cdse_dl.odata.filter import AttributeFilter, Filter
 from cdse_dl.odata.utils import handle_response
 from cdse_dl.types import DatetimeLike, GeometryLike
@@ -140,7 +141,7 @@ class SearchBase(ABC):
 class ProductSearch(SearchBase):
     """Search products on OData endpoint."""
 
-    base_url = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
+    base_url = ODATA_BASE_URL + "/Products"
     order_by_options = [
         "ContentDate/Start",
         "ContentDate/End",
@@ -214,7 +215,7 @@ class ProductSearch(SearchBase):
 class DeletedProductSearch(SearchBase):
     """Search deleted products on OData endpoint."""
 
-    base_url = "https://catalogue.dataspace.copernicus.eu/odata/v1/DeletedProducts"
+    base_url = ODATA_BASE_URL + "/DeletedProducts"
     order_by_options = [
         "ContentDate/Start",
         "ContentDate/End",
