@@ -48,3 +48,6 @@ python_version = "3.12"
 ignore_missing_imports = true
 strict = true
 exclude = "tests"
+
+[tool.pytest.ini_options]
+addopts = "--cov=cdse_dl"
