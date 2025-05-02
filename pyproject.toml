@@ -1,6 +1,6 @@
 [project]
 name = "cdse-dl"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 description = "Clients for interacting with Copernicus Data Space Ecosystem"
 readme = "README.md"
 requires-python = ">=3.11"
