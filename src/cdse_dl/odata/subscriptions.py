@@ -3,10 +3,11 @@
 from typing import Any, Literal
 
 from cdse_dl.auth import CDSEAuthSession, Credentials
+from cdse_dl.odata.constants import ODATA_BASE_URL
 from cdse_dl.odata.filter import Filter
 from cdse_dl.odata.utils import handle_response
 
-SUBSCRIPTIONS_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Subscriptions"
+SUBSCRIPTIONS_URL = f"{ODATA_BASE_URL}/Subscriptions"
 
 
 class SubscriptionClient:

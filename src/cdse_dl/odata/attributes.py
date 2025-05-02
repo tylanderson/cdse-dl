@@ -5,7 +5,9 @@ from typing import Literal, TypedDict
 
 import requests
 
-ATTRIBUTES_ENDPOINT = "https://catalogue.dataspace.copernicus.eu/odata/v1/Attributes"
+from cdse_dl.odata.constants import ODATA_BASE_URL
+
+ATTRIBUTES_ENDPOINT = f"{ODATA_BASE_URL}/Attributes"
 
 
 class Attribute(TypedDict):
