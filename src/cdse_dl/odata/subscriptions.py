@@ -1,14 +1,61 @@
 """CDSE subscriptions management tooling."""
 
-from typing import Any, Literal
+from typing import Any
 
 from cdse_dl.auth import CDSEAuthSession, Credentials
 from cdse_dl.odata.constants import ODATA_BASE_URL
 from cdse_dl.odata.filter import Filter
-from cdse_dl.odata.types import AckInfo, SubscriptionEntity, SubscriptionInfo
+from cdse_dl.odata.types import (
+    AckInfo,
+    SubscriptionEntity,
+    SubscriptionInfo,
+    SubscriptionStatus,
+    SubscriptionType,
+)
 from cdse_dl.odata.utils import handle_response
 
 SUBSCRIPTIONS_URL = ODATA_BASE_URL + "/Subscriptions"
+
+
+def _build_subscription_body(
+    *,
+    filter: Filter | None = None,
+    status: SubscriptionStatus | None = None,
+    event_types: list[SubscriptionType] | None = None,
+    notification_endpoint: str | None = None,
+    endpoint_username: str | None = None,
+    endpoint_password: str | None = None,
+) -> dict[str, Any]:
+    """Build subscription body for creation or modification.
+
+    Args:
+        filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
+        status (SubscriptionStatus | None, optional): status of subscription. Defaults to None.
+        event_types (list[SubscriptionType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
+        notification_endpoint (str | None, optional): notification endpoint for push subscriptions. Defaults to None.
+        endpoint_username (str | None, optional): notification endpoint username for push subscriptions. Defaults to None.
+        endpoint_password (str | None, optional): notification endpoint password for push subscriptions. Defaults to None.
+
+
+    Returns:
+        dict[str, Any]: subscription body
+    """
+    body = {}
+
+    if event_types:
+        body["SubscriptionEvent"] = event_types
+    if filter:
+        body["FilterParam"] = filter.filter_string
+    if status:
+        body["Status"] = status
+    if notification_endpoint:
+        body["NotificationEndpoint"] = notification_endpoint
+    if endpoint_username:
+        body["NotificationEpUsername"] = endpoint_username
+    if endpoint_password:
+        body["NotificationEpPassword"] = endpoint_password
+
+    return body
 
 
 class SubscriptionClient:
@@ -25,32 +72,32 @@ class SubscriptionClient:
     def create_subscription(
         self,
         filter: Filter | None = None,
-        notification_params: dict[str, Any] | None = None,
+        event_types: list[SubscriptionType] | None = None,
+        notification_endpoint: str | None = None,
+        endpoint_username: str | None = None,
+        endpoint_password: str | None = None,
     ) -> SubscriptionInfo:
         """Create subscription.
 
         Args:
             filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
-            notification_params (dict, optional): notification params for push subscriptions. Defaults to None.
+            event_types (list[SubscriptionType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
+            notification_endpoint (str | None, optional): notification endpoint for push subscriptions. Defaults to None.
+            endpoint_username (str | None, optional): notification endpoint username for push subscriptions. Defaults to None.
+            endpoint_password (str | None, optional): notification endpoint password for push subscriptions. Defaults to None.
 
         Returns:
-            dict: created subscription info
+            SubscriptionInfo: created subscription info
         """
-        params = {
-            "StageOrder": True,  # only available option
-            "Priority": 1,  # only available option
-            "Status": "running",
-            "SubscriptionEvent": [
-                "created"  # only available subscription event
-            ],
-        }
+        body = _build_subscription_body(
+            filter=filter,
+            event_types=event_types,
+            notification_endpoint=notification_endpoint,
+            endpoint_username=endpoint_username,
+            endpoint_password=endpoint_password,
+        )
 
-        if filter:
-            params["FilterParam"] = filter.filter_string
-        if notification_params:
-            params.update(**notification_params)
-
-        r = self.session.post(SUBSCRIPTIONS_URL, json=params)
+        r = self.session.post(SUBSCRIPTIONS_URL, json=body)
         handle_response(r)
         info: SubscriptionInfo = r.json()
         return info
@@ -74,7 +121,7 @@ class SubscriptionClient:
             ack_token (str): result ack token
 
         Returns:
-            dict: subscription info
+            AckInfo: subscription info
         """
         r = self.session.post(
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Ack?$ackid={ack_token}"
@@ -93,7 +140,7 @@ class SubscriptionClient:
             limit (int, optional): result limit, max 20. Defaults to 1.
 
         Returns:
-            list[dict]: subscription results
+            list[SubscriptionEntity]: subscription results
         """
         r = self.session.get(
             f"{SUBSCRIPTIONS_URL}({subscription_id})/Read?$top={limit}"
@@ -105,26 +152,31 @@ class SubscriptionClient:
     def update_subscription(
         self,
         subscription_id: str,
-        status: Literal["running", "paused", "cancelled"] | None = None,
-        notification_params: dict[str, Any] | None = None,
+        status: SubscriptionStatus | None = None,
+        notification_endpoint: str | None = None,
+        endpoint_username: str | None = None,
+        endpoint_password: str | None = None,
     ) -> SubscriptionInfo:
         """Update subscription.
 
         Args:
             subscription_id (str): subscription id
-            status (Literal["running", "paused", "cancelled"] | None, optional): status. Defaults to None.
-            notification_params (dict | None, optional): notification endpoint params for push subscriptions. Defaults to None.
+            status (SubscriptionStatus | None, optional): status of subscription. Defaults to None.
+            notification_endpoint (str | None, optional): notification endpoint for push subscriptions. Defaults to None.
+            endpoint_username (str | None, optional): notification endpoint username for push subscriptions. Defaults to None.
+            endpoint_password (str | None, optional): notification endpoint password for push subscriptions. Defaults to None.
 
         Returns:
-            dict: updated subscription info
+            SubscriptionInfo: updated subscription info
         """
-        params = {}
-        if status:
-            params["Status"] = status
-        if notification_params:
-            params.update(**notification_params)
+        body = _build_subscription_body(
+            status=status,
+            notification_endpoint=notification_endpoint,
+            endpoint_username=endpoint_username,
+            endpoint_password=endpoint_password,
+        )
 
-        r = self.session.patch(f"{SUBSCRIPTIONS_URL}({subscription_id})", json=params)
+        r = self.session.patch(f"{SUBSCRIPTIONS_URL}({subscription_id})", json=body)
         handle_response(r)
         info: SubscriptionInfo = r.json()
         return info
@@ -136,7 +188,7 @@ class SubscriptionClient:
             subscription_id (str): subscription id
 
         Returns:
-            dict: subscription info
+            SubscriptionInfo: subscription info
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}({subscription_id})")
         handle_response(r)
@@ -147,7 +199,7 @@ class SubscriptionClient:
         """List subscriptions.
 
         Returns:
-            list[dict]: list of subscription infos
+            list[SubscriptionInfo]: list of subscription infos
         """
         r = self.session.get(f"{SUBSCRIPTIONS_URL}/Info")
         handle_response(r)
