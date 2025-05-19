@@ -40,7 +40,7 @@ def _build_subscription_body(
     Returns:
         dict[str, Any]: subscription body
     """
-    body = {}
+    body: dict[str, Any] = {}
 
     if event_types:
         body["SubscriptionEvent"] = event_types
