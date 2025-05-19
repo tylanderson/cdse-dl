@@ -1,8 +1,11 @@
 """Search OData Endpoint."""
 
+import itertools
 import logging
+import urllib.parse
 import warnings
 from abc import ABC
+from collections.abc import Generator
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Literal
@@ -70,9 +73,8 @@ class SearchBase(ABC):
         }
 
     @staticmethod
-    def _get(url: str, params: dict[str, Any]) -> dict[str, Any]:
+    def _get(url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         try:
-            logger.debug(f"GET with params: {params}")
             response = requests.get(url, params=params)
             handle_response(response)
             content = response.json()
@@ -80,52 +82,48 @@ class SearchBase(ABC):
             raise e
         return dict(content)
 
-    def _get_formatted_params(self, limit: int, count: bool = False) -> dict[str, Any]:
+    def _get_formatted_params(self, count: bool = False) -> dict[str, Any]:
         params = deepcopy(self._parameters)
-        if limit and not params.get("top"):
-            params["top"] = limit
         params["count"] = str(count) if count else None
         params = {f"${k}": v for k, v in params.items() if v is not None}
         return params
 
-    def get(self, limit: int = 1000) -> list[dict[str, Any]]:
+    def pages(self) -> Generator[list[dict[str, Any]]]:
+        """Get pages of products.
+
+        Yields:
+            Generator[list[dict[str, Any]]]: product pages
+        """
+        params = urllib.parse.urlencode(self._get_formatted_params())
+        next_link = f"{self.base_url}?{params}"
+
+        while next_link:
+            content = self._get(next_link)
+            page_results = content["value"]
+            next_link = content.get("@odata.nextLink")
+            yield page_results
+
+    def get(self, limit: int | None = None) -> Generator[dict[str, Any]]:
         """Get products, up to a limit if given.
 
         Args:
-            limit (int | None], optional): optional limit to return. Defaults to 1000.
+            limit (int | None], optional): optional limit to return. Defaults to None.
 
-        Returns:
-            list[dict]: products
+        Yields:
+            Generator[dict[str, Any]]: products
         """
-        results = []
-        more_results = True
-        count = 0
-
-        url = self.base_url
-        params = self._get_formatted_params(limit)
-
-        while more_results:
-            content = self._get(url, params)
-            page_results = content["value"]
-            results.extend(page_results)
-            count += len(page_results)
-
-            next_link = content.get("@odata.nextLink")
-            if next_link is None or (limit is not None and count >= limit):
-                more_results = False
-            else:
-                url = next_link
-                params = {}
-
-        return results
+        self._parameters["top"] = min(
+            max(self._parameters.get("top") or 0, limit or 20), 1000
+        )
+        yield from itertools.islice(itertools.chain.from_iterable(self.pages()), limit)
 
     def get_all(self) -> list[dict[str, Any]]:
-        """Get all products.
+        """Get all products as a list.
 
         Returns:
             list[dict]: products
         """
-        return self.get()
+        return list(self.get())
 
     def hits(self) -> int:
         """Get total number of products matching search.
