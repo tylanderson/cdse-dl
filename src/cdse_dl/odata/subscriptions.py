@@ -8,6 +8,7 @@ from cdse_dl.odata.filter import Filter
 from cdse_dl.odata.types import (
     AckInfo,
     SubscriptionEntity,
+    SubscriptionEventType,
     SubscriptionInfo,
     SubscriptionStatus,
     SubscriptionType,
@@ -21,7 +22,7 @@ def _build_subscription_body(
     *,
     filter: Filter | None = None,
     status: SubscriptionStatus | None = None,
-    event_types: list[SubscriptionType] | None = None,
+    event_types: list[SubscriptionEventType] | None = None,
     notification_endpoint: str | None = None,
     endpoint_username: str | None = None,
     endpoint_password: str | None = None,
@@ -31,7 +32,7 @@ def _build_subscription_body(
     Args:
         filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
         status (SubscriptionStatus | None, optional): status of subscription. Defaults to None.
-        event_types (list[SubscriptionType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
+        event_types (list[SubscriptionEventType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
         notification_endpoint (str | None, optional): notification endpoint for push subscriptions. Defaults to None.
         endpoint_username (str | None, optional): notification endpoint username for push subscriptions. Defaults to None.
         endpoint_password (str | None, optional): notification endpoint password for push subscriptions. Defaults to None.
@@ -71,8 +72,9 @@ class SubscriptionClient:
 
     def create_subscription(
         self,
+        subscription_type: SubscriptionType,
         filter: Filter | None = None,
-        event_types: list[SubscriptionType] | None = None,
+        event_types: list[SubscriptionEventType] | None = None,
         notification_endpoint: str | None = None,
         endpoint_username: str | None = None,
         endpoint_password: str | None = None,
@@ -80,8 +82,9 @@ class SubscriptionClient:
         """Create subscription.
 
         Args:
+            subscription_type (SubscriptionType): Subscription type to create (push or pull)
             filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
-            event_types (list[SubscriptionType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
+            event_types (list[SubscriptionEventType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
             notification_endpoint (str | None, optional): notification endpoint for push subscriptions. Defaults to None.
             endpoint_username (str | None, optional): notification endpoint username for push subscriptions. Defaults to None.
             endpoint_password (str | None, optional): notification endpoint password for push subscriptions. Defaults to None.
@@ -91,6 +94,7 @@ class SubscriptionClient:
         """
         body = _build_subscription_body(
             filter=filter,
+            subscription_type=subscription_type,
             event_types=event_types,
             notification_endpoint=notification_endpoint,
             endpoint_username=endpoint_username,

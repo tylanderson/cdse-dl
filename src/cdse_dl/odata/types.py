@@ -1,6 +1,12 @@
 """odata types."""
 
+from enum import StrEnum
 from typing import Any, Literal, NotRequired, TypedDict
+
+
+class SubscriptionType(StrEnum):  # noqa: D101
+    PULL = "pull"
+    PUSH = "push"
 
 
 class Attribute(TypedDict):  # noqa: D101
@@ -10,7 +16,7 @@ class Attribute(TypedDict):  # noqa: D101
 
 CollectionAttributes = dict[str, list[Attribute]]
 
-SubscriptionType = Literal["created", "modified", "created, modified", "deleted"]
+SubscriptionEventType = Literal["created", "modified", "created, modified", "deleted"]
 SubscriptionStatus = Literal["running", "paused", "canceled"]
 
 
@@ -21,13 +27,13 @@ class SubscriptionInfo(TypedDict, total=False):  # noqa: D101
     Priority: int
     Status: SubscriptionStatus
     LastNotificationDate: NotRequired[str]  # ISO 8601 date string
-    SubscriptionEvent: list[SubscriptionType]
+    SubscriptionEvent: list[SubscriptionEventType]
     SubmissionDate: str  # ISO 8601 date string
     NotificationEndpoint: NotRequired[str]
 
 
 class SubscriptionEntity(TypedDict, total=False):  # noqa: D101
-    SubscriptionEvent: SubscriptionType
+    SubscriptionEvent: SubscriptionEventType
     ProductId: str
     ProductName: NotRequired[str]  # not on PULL after 3 days
     SubscriptionId: str
