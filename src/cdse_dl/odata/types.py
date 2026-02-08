@@ -16,8 +16,18 @@ class Attribute(TypedDict):  # noqa: D101
 
 CollectionAttributes = dict[str, list[Attribute]]
 
-SubscriptionEventType = Literal["created", "modified", "created, modified", "deleted"]
-SubscriptionStatus = Literal["running", "paused", "canceled"]
+
+class SubscriptionEventType(StrEnum):  # noqa: D101
+    CREATED = "created"
+    MODIFIED = "modified"
+    CREATED_MODIFIED = "created, modified"
+    DELETED = "deleted"
+
+
+class SubscriptionStatus(StrEnum):  # noqa: D101
+    RUNNING = "running"
+    PAUSED = "paused"
+    CANCELED = "canceled"
 
 
 class SubscriptionInfo(TypedDict, total=False):  # noqa: D101

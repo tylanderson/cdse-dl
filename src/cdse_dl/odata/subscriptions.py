@@ -19,6 +19,7 @@ SUBSCRIPTIONS_URL = ODATA_BASE_URL + "/Subscriptions"
 
 
 def _build_subscription_body(
+    subscription_type: SubscriptionType | None = None,
     *,
     filter: Filter | None = None,
     status: SubscriptionStatus | None = None,
@@ -30,6 +31,7 @@ def _build_subscription_body(
     """Build subscription body for creation or modification.
 
     Args:
+        subscription_type (SubscriptionType | None, optional): Subscription type to create (push or pull). Required for creation, not used for modification. Defaults to None.
         filter (Filter | None, optional): OData Filter used to filter products that go to the subscription. Defaults to None.
         status (SubscriptionStatus | None, optional): status of subscription. Defaults to None.
         event_types (list[SubscriptionEventType] | None, optional): event types to subscribe to, defaults to "created". Defaults to None.
@@ -43,6 +45,8 @@ def _build_subscription_body(
     """
     body: dict[str, Any] = {}
 
+    if subscription_type:
+        body["SubscriptionType"] = subscription_type
     if event_types:
         body["SubscriptionEvent"] = event_types
     if filter:
