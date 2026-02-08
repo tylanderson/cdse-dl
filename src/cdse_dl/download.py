@@ -201,7 +201,7 @@ class Downloader:
         if name is None and product_id is None:
             raise ValueError("must provide one of `name` or `product_id`")
         search = ProductSearch(collection=collection, name=name, product_id=product_id)
-        product = search.get(1)[0]
+        product = next(search.get(1))
         self.download(product, path, check, quiet)
 
     def download_from_id(

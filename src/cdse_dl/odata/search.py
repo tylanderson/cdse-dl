@@ -60,7 +60,6 @@ class SearchBase(ABC):
             order_by (str | None, optional): order entry by property. Defaults to None.
             order (Literal["asc", "desc"] | None, optional): order of entries. Defaults to None.
             expand (str | None, optional): how to expand entry. Defaults to None.
-            filters (list[Filter] | None, optional): extra filters to apply. Defaults to None.
             select (list[str] | None, optional): limit the requested properties to a specific subset. Defaults to None.
         """
         self._parameters = {
@@ -95,7 +94,7 @@ class SearchBase(ABC):
             Generator[list[dict[str, Any]]]: product pages
         """
         params = urllib.parse.urlencode(self._get_formatted_params())
-        next_link = f"{self.base_url}?{params}"
+        next_link: str | None = f"{self.base_url}?{params}"
 
         while next_link:
             content = self._get(next_link)
@@ -131,7 +130,7 @@ class SearchBase(ABC):
         Returns:
             int: matching hits
         """
-        params = self._get_formatted_params(limit=1, count=True)
+        params = self._get_formatted_params(count=True)
         content = self._get(self.base_url, params=params)
         return int(content["@odata.count"])
 
